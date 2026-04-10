@@ -2,6 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 export const CTASection = () => {
   const { t } = useLanguage();
@@ -33,10 +34,12 @@ export const CTASection = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          <Button size="lg" className="mt-8 bg-gradient-primary px-10 py-6 text-base font-semibold text-primary-foreground shadow-glow hover:opacity-90">
-            {t("cta.button")}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link to="/auth">
+            <Button size="lg" className="mt-8 bg-gradient-primary px-10 py-6 text-base font-semibold text-primary-foreground shadow-glow hover:opacity-90">
+              {t("cta.button")}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

@@ -2,6 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 export const HeroSection = () => {
   const { t } = useLanguage();
@@ -49,10 +50,12 @@ export const HeroSection = () => {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row"
         >
-          <Button size="lg" className="bg-gradient-primary px-8 py-6 text-base font-semibold text-primary-foreground shadow-glow hover:opacity-90">
-            {t("hero.cta")}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link to="/auth">
+            <Button size="lg" className="bg-gradient-primary px-8 py-6 text-base font-semibold text-primary-foreground shadow-glow hover:opacity-90">
+              {t("hero.cta")}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
           <Button size="lg" variant="outline" className="border-hero-muted/30 px-8 py-6 text-base text-hero-muted hover:bg-hero-foreground/5 hover:text-hero-foreground">
             <Play className="mr-2 h-4 w-4" />
             {t("hero.cta2")}

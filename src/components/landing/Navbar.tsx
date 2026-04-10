@@ -27,12 +27,12 @@ export const Navbar = () => {
 
         <div className="hidden items-center gap-3 md:flex">
           <LanguageSwitcher variant="dark" />
-          <Link to="/dashboard">
+          <Link to="/auth">
             <Button variant="ghost" className="text-hero-muted hover:text-hero-foreground hover:bg-hero-foreground/10">
               {t("nav.login")}
             </Button>
           </Link>
-          <Link to="/dashboard">
+          <Link to="/auth">
             <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90">
               {t("nav.start")}
             </Button>
@@ -51,7 +51,7 @@ export const Navbar = () => {
             <a href="#how" className="text-sm text-hero-muted" onClick={() => setOpen(false)}>{t("nav.how")}</a>
             <a href="#pricing" className="text-sm text-hero-muted" onClick={() => setOpen(false)}>{t("nav.pricing")}</a>
             <LanguageSwitcher variant="dark" />
-            <Link to="/dashboard">
+            <Link to="/auth">
               <Button className="w-full bg-gradient-primary text-primary-foreground">{t("nav.start")}</Button>
             </Link>
           </div>
