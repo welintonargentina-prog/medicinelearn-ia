@@ -3,6 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Check, Sparkles, Crown, CreditCard, QrCode, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
+
+const browserLang = navigator.language.toLowerCase();
+const isBrazil = browserLang.includes("pt");
+
+const prices = {
+  student: isBrazil ? "R$ 36,90" : "AR$ 8.900",
+  quarterly: isBrazil ? "R$ 99,90" : "AR$ 23.900",
+};
 interface Plan {
   nameKey: string;
   subtitleKey: string;
@@ -32,7 +40,7 @@ const plans: Plan[] = [
   {
     nameKey: "pricing.student.name",
     subtitleKey: "pricing.student.subtitle",
-    price: "R$ 36,90",
+    price: prices.student,
     periodKey: "pricing.monthly",
     ctaKey: "pricing.student.cta",
     features: [
@@ -50,7 +58,7 @@ const plans: Plan[] = [
   {
     nameKey: "pricing.quarterly.name",
     subtitleKey: "pricing.quarterly.subtitle",
-    price: "R$ 99,90",
+    price: prices.quarterly,
     periodKey: "pricing.quarterly",
     ctaKey: "pricing.quarterly.cta",
     features: [
