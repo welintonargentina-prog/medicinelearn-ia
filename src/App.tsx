@@ -23,11 +23,11 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
