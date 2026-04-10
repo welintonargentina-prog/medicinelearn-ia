@@ -1,11 +1,12 @@
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import {
   Brain, Upload, FileText, BookOpen, Target, Stethoscope,
-  Headphones, MessageSquare, BarChart3, Flame, Clock, TrendingDown, Home
+  Headphones, MessageSquare, BarChart3, Flame, Clock, TrendingDown, Home, LogOut
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const sidebarItems = [
   { icon: Home, label: "Dashboard" },
@@ -21,6 +22,13 @@ const sidebarItems = [
 
 const Dashboard = () => {
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <div className="flex min-h-screen bg-muted/30">
@@ -32,20 +40,31 @@ const Dashboard = () => {
           </div>
           <span className="text-lg font-bold text-foreground">MedLearn AI</span>
         </div>
-        <nav className="p-4 space-y-1">
-          {sidebarItems.map(({ icon: Icon, label }, i) => (
+        <nav className="flex flex-col justify-between h-[calc(100vh-4rem)]">
+          <div className="p-4 space-y-1">
+            {sidebarItems.map(({ icon: Icon, label }, i) => (
+              <button
+                key={label}
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  i === 0
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="p-4 border-t border-border">
             <button
-              key={label}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                i === 0
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
+              onClick={handleLogout}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
             >
-              <Icon className="h-4 w-4" />
-              {label}
+              <LogOut className="h-4 w-4" />
+              Sair
             </button>
-          ))}
+          </div>
         </nav>
       </aside>
 
@@ -53,13 +72,18 @@ const Dashboard = () => {
       <div className="flex-1">
         <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
           <h1 className="text-lg font-semibold text-foreground">
-            {t("dash.welcome")}, <span className="text-gradient">Estudante</span>
+            {t("dash.welcome")},{" "}
+            <span className="text-gradient">{user?.email ?? "Estudante"}</span>
           </h1>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <Link to="/">
               <Button variant="outline" size="sm">Landing Page</Button>
             </Link>
+            <Button variant="destructive" size="sm" onClick={handleLogout} className="lg:hidden">
+              <LogOut className="mr-2 h-4 w-4" />
+              Sair
+            </Button>
           </div>
         </header>
 
@@ -95,7 +119,7 @@ const Dashboard = () => {
             </Button>
           </div>
 
-          {/* Recent materials placeholder */}
+          {/* Recent materials */}
           <div>
             <h2 className="text-lg font-semibold text-foreground mb-4">{t("dash.recent")}</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
