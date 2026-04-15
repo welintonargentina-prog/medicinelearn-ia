@@ -10,6 +10,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Summaries from "./pages/Summaries";
+import Folders from "./pages/Folders";
+import FolderDetail from "./pages/FolderDetail";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -165,6 +167,22 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <Summaries />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/folders"
+                  element={
+                    <ProtectedRoute>
+                      <Folders />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/folders/:folderId"
+                  element={
+                    <ProtectedRoute>
+                      <FolderDetail />
                     </ProtectedRoute>
                   }
                 />
