@@ -1,4 +1,4 @@
-import type { StudyFolder, QuizQuestion, QuizResult } from "@/types/quiz";
+import type { StudyFolder, QuizQuestion, QuizResult, QuizAnswer } from "@/types/quiz";
 
 export const mockFolders: StudyFolder[] = [
   { id: "f1", name: "Anatomia Humana", description: "Sistema musculoesquelético, nervoso e cardiovascular", icon: "🦴", materialsCount: 8, createdAt: "2026-03-01" },
