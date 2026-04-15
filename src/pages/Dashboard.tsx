@@ -133,6 +133,8 @@ const Dashboard = () => {
                 className="mt-5 w-full bg-white/10 text-white hover:bg-white/20 border border-white/10"
                 onClick={() => {
                   if (card.title === "Resumos com IA") navigate("/summaries");
+                  if (card.title === "Questões e Simulados") navigate("/folders");
+                  if (card.title === "Meus Materiais") navigate("/folders");
                 }}
               >
                 <Sparkles className="mr-2 h-3.5 w-3.5" /> Abrir
