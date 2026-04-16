@@ -22,12 +22,24 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
+type FolderItem = {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  icon: string;
+  materialsCount: number;
+  createdAt: string;
+};
+
 type SubFolder = {
   id: string;
   name: string;
   color: string;
   createdAt: string;
 };
+
+const FOLDERS_STORAGE_KEY = "medlearn_folders";
 
 const folderColors = [
   "#2563eb",
@@ -45,18 +57,33 @@ const FolderDetail = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
 
-  const folder = mockFolders.find((f) => f.id === folderId);
-  const performance = useMemo(
-    () => (folderId ? computePerformance(folderId) : null),
-    [folderId]
-  );
-
+  const [storedFolders, setStoredFolders] = useState<FolderItem[]>([]);
   const STORAGE_KEY = `folder_${folderId}_subfolders`;
 
   const [subFolders, setSubFolders] = useState<SubFolder[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [newColor, setNewColor] = useState(folderColors[0]);
+
+  useEffect(() => {
+    const savedFolders = localStorage.getItem(FOLDERS_STORAGE_KEY);
+    if (savedFolders) {
+      try {
+        setStoredFolders(JSON.parse(savedFolders));
+      } catch {
+        setStoredFolders([]);
+      }
+    }
+  }, []);
+
+  const folder =
+    storedFolders.find((f) => f.id === folderId) ||
+    mockFolders.find((f) => f.id === folderId);
+
+  const performance = useMemo(
+    () => (folderId ? computePerformance(folderId) : null),
+    [folderId]
+  );
 
   useEffect(() => {
     if (!folderId) return;
