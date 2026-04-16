@@ -12,12 +12,13 @@ import {
   Check,
   X,
   Palette,
+  Trash2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
-type FolderItem = {
+export type FolderItem = {
   id: string;
   name: string;
   description: string;
@@ -27,7 +28,7 @@ type FolderItem = {
   createdAt: string;
 };
 
-const STORAGE_KEY = "medlearn_folders";
+export const STORAGE_KEY = "medlearn_folders";
 
 const defaultFolders: FolderItem[] = [
   {
@@ -103,9 +104,7 @@ const Folders = () => {
   }, []);
 
   useEffect(() => {
-    if (folders.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(folders));
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(folders));
   }, [folders]);
 
   const sortedFolders = useMemo(() => {
@@ -159,6 +158,11 @@ const Folders = () => {
     setEditingId(null);
     setEditingName("");
     setEditingColor(folderColors[0]);
+  };
+
+  const deleteFolder = (id: string) => {
+    setFolders((prev) => prev.filter((folder) => folder.id !== id));
+    localStorage.removeItem(`folder_${id}_subfolders`);
   };
 
   return (
@@ -293,14 +297,24 @@ const Folders = () => {
                       </div>
 
                       {!isEditing ? (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => startEdit(folder)}
-                          className="text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => startEdit(folder)}
+                            className="text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteFolder(folder.id)}
+                            className="text-red-400 hover:bg-white/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       ) : (
                         <div className="flex gap-1">
                           <Button
