@@ -7,11 +7,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Summaries from "./pages/Summaries";
 import Folders from "./pages/Folders";
 import FolderDetail from "./pages/FolderDetail";
+import Flashcards from "./pages/Flashcards"; // ✅ IMPORT ADICIONADO
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -154,6 +156,7 @@ const App = () => (
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+
                 <Route
                   path="/"
                   element={
@@ -162,30 +165,7 @@ const App = () => (
                     </ProtectedRoute>
                   }
                 />
-                <Route
-                  path="/summaries"
-                  element={
-                    <ProtectedRoute>
-                      <Summaries />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/folders"
-                  element={
-                    <ProtectedRoute>
-                      <Folders />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/folders/:folderId"
-                  element={
-                    <ProtectedRoute>
-                      <FolderDetail />
-                    </ProtectedRoute>
-                  }
-                />
+
                 <Route
                   path="/dashboard"
                   element={
@@ -194,6 +174,43 @@ const App = () => (
                     </ProtectedRoute>
                   }
                 />
+
+                <Route
+                  path="/folders"
+                  element={
+                    <ProtectedRoute>
+                      <Folders />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/folders/:folderId"
+                  element={
+                    <ProtectedRoute>
+                      <FolderDetail />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/flashcards"
+                  element={
+                    <ProtectedRoute>
+                      <Flashcards />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/summaries"
+                  element={
+                    <ProtectedRoute>
+                      <Summaries />
+                    </ProtectedRoute>
+                  }
+                />
+
                 <Route
                   path="*"
                   element={
