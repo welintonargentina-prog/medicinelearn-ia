@@ -1839,9 +1839,10 @@ const FolderDetail = () => {
             {performance && <PerformancePanel performance={performance} />}
           </TabsContent>
         </Tabs>
-     </main>
-</div>   
-</div>   
-);
+          </main>
+    </div>
+  </div>
+  );
+};
 
 export default FolderDetail;
