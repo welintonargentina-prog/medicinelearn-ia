@@ -1,5 +1,4 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { mockFolders } from "@/data/mockQuizData";
 import { computePerformance } from "@/lib/quizStorage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimuladosTab } from "@/components/simulados/SimuladosTab";
@@ -23,12 +22,12 @@ import {
   Send,
   Layers3,
   BookOpenText,
-  Sparkles,
+
   ChevronRight,
   ChevronLeft,
   Clock3,
   SlidersHorizontal,
-  RotateCcw,
+  
   Folder,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -360,9 +359,7 @@ const FolderDetail = () => {
     }
   }, []);
 
-  const folder =
-    storedFolders.find((f) => f.id === folderId) ||
-    mockFolders.find((f) => f.id === folderId);
+  const folder = storedFolders.find((f) => f.id === folderId);
 
  useEffect(() => {
   if (!folderId) return;
@@ -503,35 +500,36 @@ const FolderDetail = () => {
   const wrongRate =
     totalReviews > 0 ? Math.round((wrongReviews / totalReviews) * 100) : 0;
 
-  const createSubFolder = () => {
-    if (!newSubFolderName.trim()) return;
+ const createSubFolder = () => {
+  if (!newSubFolderName.trim()) return;
 
-    const newFolder: SubFolder = {
-      id: crypto.randomUUID(),
-      name: newSubFolderName.trim(),
-      color: newSubFolderColor,
-      createdAt: new Date().toISOString(),
-      materials: [],
-    };
-
-    setSubFolders((prev) => [newFolder, ...prev]);
-    setSelectedSubFolderId(newFolder.id);
-    setNewSubFolderName("");
-    setNewSubFolderColor(folderColors[0]);
-    setShowCreateSubFolder(false);
+  const newFolder: SubFolder = {
+    id: crypto.randomUUID(),
+    name: newSubFolderName.trim(),
+    color: newSubFolderColor,
+    createdAt: new Date().toISOString(),
+    materials: [],
   };
 
-  const deleteSubFolder = (id: string) => {
-    const updated = subFolders.filter((subFolder) => subFolder.id !== id);
-    setSubFolders(updated);
+  setSubFolders((prev) => [newFolder, ...prev]);
+  setNewSubFolderName("");
+  setNewSubFolderColor(folderColors[0]);
+  setShowCreateSubFolder(false);
 
-    const subContextKey = `study_context_folder:${folderId}/subfolder:${id}`;
-    localStorage.removeItem(subContextKey);
+  navigate(`/folders/${folderId}/sub/${newFolder.id}`);
+};
 
-    if (selectedSubFolderId === id) {
-      setSelectedSubFolderId(updated[0]?.id || null);
-    }
-  };
+ const deleteSubFolder = (id: string) => {
+  const updated = subFolders.filter((subFolder) => subFolder.id !== id);
+  setSubFolders(updated);
+
+  const subContextKey = `study_context_folder:${folderId}/subfolder:${id}`;
+  localStorage.removeItem(subContextKey);
+
+  if (selectedSubFolderId === id) {
+    navigate(`/folders/${folderId}`);
+  }
+};
 
   const resetMaterialForm = () => {
     setMaterialTitle("");
@@ -1016,57 +1014,20 @@ const FolderDetail = () => {
 
               <div>
                 <p className="text-xs uppercase tracking-[0.22em] text-hero-muted">
-                  Contexto ativo
-                </p>
+  Área de estudo
+</p>
                 <h1 className="mt-1 text-3xl font-bold">
                   {folder.name}
                   {selectedSubFolder && (
-                    <span className="text-hero-muted"> / {selectedSubFolder.name}</span>
+                   <span className="text-hero-muted font-normal"> / {selectedSubFolder.name}</span>
                   )}
                 </h1>
                 <p className="mt-1 text-sm text-hero-muted max-w-2xl">
-                  {selectedSubFolder
-                    ? "Tudo o que você fizer aqui pertence apenas a esta subpasta."
-                    : folder.description}
-                </p>
+  {selectedSubFolder
+    ? `Subpasta: ${selectedSubFolder.name}`
+    : folder.description || "Sem descrição"}
+</p>
               </div>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-sm text-hero-muted md:min-w-[280px]">
-              <div className="flex items-center gap-2 text-hero-foreground font-medium">
-                <Sparkles className="h-4 w-4 text-primary" />
-                Ambiente de estudo independente
-              </div>
-              <p className="mt-1 text-xs leading-relaxed">
-                Chats, simulados, flashcards e revisões ficam separados por contexto.
-              </p>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-wide text-hero-muted">
-                Você está estudando
-              </p>
-              <p className="mt-1 text-base font-semibold">
-                📁 {folder.name}
-                {selectedSubFolder && ` > 📂 ${selectedSubFolder.name}`}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2 text-xs text-hero-muted">
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                {folderMaterials.length} materiais na pasta
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                {subFolders.length} subpastas
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                {selectedSubFolder?.materials.length ?? 0} materiais na subpasta
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                {flashcards.length} flashcards
-              </span>
             </div>
           </div>
         </motion.div>
@@ -1227,7 +1188,7 @@ const FolderDetail = () => {
                             key={subFolder.id}
                             whileHover={{ scale: 1.015 }}
                             transition={{ type: "spring", stiffness: 220, damping: 18 }}
-                            onClick={() => setSelectedSubFolderId(subFolder.id)}
+                            onClick={() => navigate(`/folders/${folderId}/sub/${subFolder.id}`)}
                             className={`relative w-full overflow-hidden rounded-2xl border p-4 text-left transition ${
                               isSelected
                                 ? "border-primary bg-primary/10 shadow-lg"
