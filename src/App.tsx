@@ -192,7 +192,14 @@ const App = () => (
                     </ProtectedRoute>
                   }
                 />
-
+              <Route
+  path="/folders/:folderId/sub/:subFolderId"
+  element={
+    <ProtectedRoute>
+      <FolderDetail />
+    </ProtectedRoute>
+  }
+/>
                 <Route
                   path="/flashcards"
                   element={
