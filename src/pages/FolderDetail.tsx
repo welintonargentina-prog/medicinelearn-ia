@@ -297,6 +297,7 @@ function FlashcardPreview({
 }
 
 const FolderDetail = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const { folderId } = useParams<{ folderId: string }>();
   const { signOut } = useAuth();
   const navigate = useNavigate();
