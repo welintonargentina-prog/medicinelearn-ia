@@ -682,9 +682,11 @@ const FolderDetail = () => {
     setShowFlashcardForm(false);
   };
 
-  const deleteFlashcard = (id: string) => {
-    setFlashcards((prev) => prev.filter((card) => card.id !== id));
-  };
+ const deleteFlashcard = (id: string) => {
+  setFlashcards((prev) => prev.filter((card) => card.id !== id));
+  setFlashcardReviews((prev) =>
+    prev.filter((review) => review.flashcardId !== id)
+  );
 
   if (!folder) {
     return (
