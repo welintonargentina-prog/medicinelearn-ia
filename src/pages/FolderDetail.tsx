@@ -27,6 +27,7 @@ import {
   Clock3,
   SlidersHorizontal,
   RotateCcw,
+  Folder,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -300,6 +301,10 @@ const FolderDetail = () => {
 
   const [storedFolders, setStoredFolders] = useState<FolderItem[]>([]);
   const SUBFOLDERS_STORAGE_KEY = `folder_${folderId}_subfolders`;
+  const FOLDER_MATERIALS_STORAGE_KEY = `folder_${folderId}_materials`;
+
+  const [folderMaterials, setFolderMaterials] = useState<MaterialItem[]>([]);
+  const [showAddFolderMaterial, setShowAddFolderMaterial] = useState(false);
 
   const [subFolders, setSubFolders] = useState<SubFolder[]>([]);
   const [selectedSubFolderId, setSelectedSubFolderId] = useState<string | null>(null);
@@ -369,6 +374,30 @@ const FolderDetail = () => {
     if (!folderId) return;
     localStorage.setItem(SUBFOLDERS_STORAGE_KEY, JSON.stringify(subFolders));
   }, [subFolders, folderId, SUBFOLDERS_STORAGE_KEY]);
+
+  useEffect(() => {
+    if (!folderId) return;
+
+    const saved = localStorage.getItem(FOLDER_MATERIALS_STORAGE_KEY);
+    if (saved) {
+      try {
+        setFolderMaterials(JSON.parse(saved));
+      } catch {
+        localStorage.removeItem(FOLDER_MATERIALS_STORAGE_KEY);
+        setFolderMaterials([]);
+      }
+    } else {
+      setFolderMaterials([]);
+    }
+  }, [folderId, FOLDER_MATERIALS_STORAGE_KEY]);
+
+  useEffect(() => {
+    if (!folderId) return;
+    localStorage.setItem(
+      FOLDER_MATERIALS_STORAGE_KEY,
+      JSON.stringify(folderMaterials)
+    );
+  }, [folderMaterials, folderId, FOLDER_MATERIALS_STORAGE_KEY]);
 
   const selectedSubFolder =
     subFolders.find((subFolder) => subFolder.id === selectedSubFolderId) || null;
@@ -468,13 +497,19 @@ const FolderDetail = () => {
     }
   };
 
-  const addMaterial = () => {
-    if (!selectedSubFolder) return;
-    if (!materialTitle.trim()) return;
-    if (materialType === "note" && !materialContent.trim()) return;
-    if (materialType === "youtube" && !materialUrl.trim()) return;
+  const resetMaterialForm = () => {
+    setMaterialTitle("");
+    setMaterialContent("");
+    setMaterialUrl("");
+    setMaterialType("note");
+  };
 
-    const newMaterial: MaterialItem = {
+  const buildMaterial = (): MaterialItem | null => {
+    if (!materialTitle.trim()) return null;
+    if (materialType === "note" && !materialContent.trim()) return null;
+    if (materialType === "youtube" && !materialUrl.trim()) return null;
+
+    return {
       id: crypto.randomUUID(),
       title: materialTitle.trim(),
       type: materialType,
@@ -488,6 +523,22 @@ const FolderDetail = () => {
       videoTimestamp: "",
       materialId: crypto.randomUUID(),
     };
+  };
+
+  const addFolderMaterial = () => {
+    const newMaterial = buildMaterial();
+    if (!newMaterial) return;
+
+    setFolderMaterials((prev) => [newMaterial, ...prev]);
+    resetMaterialForm();
+    setShowAddFolderMaterial(false);
+  };
+
+  const addMaterialToSubFolder = () => {
+    if (!selectedSubFolder) return;
+
+    const newMaterial = buildMaterial();
+    if (!newMaterial) return;
 
     setSubFolders((prev) =>
       prev.map((subFolder) =>
@@ -500,14 +551,15 @@ const FolderDetail = () => {
       )
     );
 
-    setMaterialTitle("");
-    setMaterialContent("");
-    setMaterialUrl("");
-    setMaterialType("note");
+    resetMaterialForm();
     setShowAddMaterial(false);
   };
 
-  const deleteMaterial = (materialId: string) => {
+  const deleteFolderMaterial = (materialId: string) => {
+    setFolderMaterials((prev) => prev.filter((m) => m.id !== materialId));
+  };
+
+  const deleteSubFolderMaterial = (materialId: string) => {
     if (!selectedSubFolder) return;
 
     setSubFolders((prev) =>
@@ -611,6 +663,172 @@ const FolderDetail = () => {
     );
   }
 
+  const renderMaterialForm = (
+    onSave: () => void,
+    onCancel: () => void,
+    title = "Novo material"
+  ) => (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4"
+    >
+      <h3 className="text-base font-semibold">{title}</h3>
+
+      <div className="flex gap-2 flex-wrap">
+        <Button
+          type="button"
+          variant={materialType === "note" ? "default" : "outline"}
+          onClick={() => setMaterialType("note")}
+        >
+          <NotebookPen className="mr-2 h-4 w-4" />
+          Nota de texto
+        </Button>
+
+        <Button
+          type="button"
+          variant={materialType === "youtube" ? "default" : "outline"}
+          onClick={() => setMaterialType("youtube")}
+        >
+          <Youtube className="mr-2 h-4 w-4" />
+          Link do YouTube
+        </Button>
+      </div>
+
+      <input
+        value={materialTitle}
+        onChange={(e) => setMaterialTitle(e.target.value)}
+        placeholder="Título do material"
+        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
+      />
+
+      {materialType === "note" ? (
+        <textarea
+          value={materialContent}
+          onChange={(e) => setMaterialContent(e.target.value)}
+          placeholder="Escreva a nota ou cole o conteúdo aqui"
+          className="min-h-[140px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
+        />
+      ) : (
+        <input
+          value={materialUrl}
+          onChange={(e) => setMaterialUrl(e.target.value)}
+          placeholder="Cole a URL do vídeo do YouTube"
+          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
+        />
+      )}
+
+      <div className="flex gap-3">
+        <Button onClick={onSave}>Salvar material</Button>
+        <Button variant="outline" onClick={onCancel}>
+          Cancelar
+        </Button>
+      </div>
+    </motion.div>
+  );
+
+  const renderMaterialsList = (
+    materials: MaterialItem[],
+    onDelete: (id: string) => void,
+    emptyTitle: string,
+    emptyDescription: string,
+    onAdd?: () => void
+  ) => {
+    if (materials.length === 0) {
+      return (
+        <div className="flex min-h-[260px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
+          <FileText className="mb-4 h-12 w-12 text-hero-muted" />
+          <h3 className="text-xl font-semibold">{emptyTitle}</h3>
+          <p className="mt-2 max-w-xl text-sm text-hero-muted">
+            {emptyDescription}
+          </p>
+          {onAdd && (
+            <Button
+              className="mt-5 bg-gradient-primary text-primary-foreground hover:opacity-90"
+              onClick={onAdd}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar primeiro material
+            </Button>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-4">
+        {materials.map((material) => (
+          <motion.div
+            key={material.id}
+            whileHover={{ scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 220, damping: 20 }}
+            className="cursor-pointer rounded-3xl border border-white/10 bg-white/5 p-5 transition-all hover:bg-white/10"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
+                  {material.type === "note" ? (
+                    <NotebookPen className="h-5 w-5 text-primary" />
+                  ) : (
+                    <Youtube className="h-5 w-5 text-red-400" />
+                  )}
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-semibold">{material.title}</h3>
+                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-hero-muted">
+                      {material.type === "note" ? "Nota" : "YouTube"}
+                    </span>
+                  </div>
+
+                  <p className="mt-1 text-xs text-hero-muted">
+                    Criado em {formatDate(material.createdAt)}
+                  </p>
+
+                  {material.type === "note" && material.content && (
+                    <p className="mt-3 max-w-3xl text-sm text-hero-muted line-clamp-3">
+                      {material.content}
+                    </p>
+                  )}
+
+                  {material.type === "youtube" && material.url && (
+                    <a
+                      href={material.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 inline-block text-sm text-primary underline"
+                    >
+                      Abrir vídeo
+                    </a>
+                  )}
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
+                      Fonte: {material.sourceType || "não definida"}
+                    </span>
+                    <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
+                      Contexto salvo
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onDelete(material.id)}
+                className="text-red-400 hover:bg-white/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-hero text-hero-foreground">
       <header className="border-b border-white/10 glass">
@@ -711,13 +929,13 @@ const FolderDetail = () => {
 
             <div className="flex flex-wrap gap-2 text-xs text-hero-muted">
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                {folderMaterials.length} materiais na pasta
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
                 {subFolders.length} subpastas
               </span>
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                {selectedSubFolder?.materials.length ?? 0} materiais
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                {chatHistory.length} mensagens
+                {selectedSubFolder?.materials.length ?? 0} materiais na subpasta
               </span>
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
                 {flashcards.length} flashcards
@@ -745,15 +963,65 @@ const FolderDetail = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="materiais" className="mt-6">
-            <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
+          <TabsContent value="materiais" className="mt-6 space-y-6">
+            {/* Materiais da pasta */}
+            <section className="space-y-4">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
+                      <Folder className="h-7 w-7 text-primary" />
+                    </div>
+
+                    <div>
+                      <h2 className="text-xl font-semibold">Materiais da pasta</h2>
+                      <p className="text-sm text-hero-muted">
+                        Adicione materiais diretamente nesta pasta, sem precisar criar subpasta.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => {
+                      setShowAddFolderMaterial((prev) => !prev);
+                      setShowAddMaterial(false);
+                    }}
+                    className="bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-md"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Adicionar material na pasta
+                  </Button>
+                </div>
+              </div>
+
+              {showAddFolderMaterial &&
+                renderMaterialForm(
+                  addFolderMaterial,
+                  () => {
+                    setShowAddFolderMaterial(false);
+                    resetMaterialForm();
+                  },
+                  "Novo material da pasta"
+                )}
+
+              {renderMaterialsList(
+                folderMaterials,
+                deleteFolderMaterial,
+                "Nenhum material diretamente nesta pasta ainda",
+                "Adicione notas ou links do YouTube diretamente na pasta principal.",
+                () => setShowAddFolderMaterial(true)
+              )}
+            </section>
+
+            {/* Subpastas + materiais da subpasta */}
+            <section className="grid gap-6 lg:grid-cols-[340px_1fr]">
               <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-glow">
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <h2 className="text-xl font-semibold">Subpastas</h2>
                       <p className="mt-1 text-sm text-hero-muted">
-                        Organize os conteúdos por assunto.
+                        Organize conteúdos por assunto.
                       </p>
                     </div>
 
@@ -819,7 +1087,7 @@ const FolderDetail = () => {
                       <FolderOpen className="mx-auto mb-3 h-8 w-8 text-hero-muted" />
                       <p className="font-medium">Nenhuma subpasta criada ainda</p>
                       <p className="mt-1 text-sm text-hero-muted">
-                        Crie sua primeira subpasta para organizar melhor o estudo.
+                        Crie uma subpasta para separar assuntos.
                       </p>
                     </div>
                   ) : (
@@ -894,8 +1162,7 @@ const FolderDetail = () => {
                     <FolderOpen className="mb-4 h-12 w-12 text-hero-muted" />
                     <h3 className="text-2xl font-semibold">Nenhuma subpasta selecionada</h3>
                     <p className="mt-2 max-w-xl text-sm text-hero-muted">
-                      Crie ou selecione uma subpasta para começar a adicionar notas,
-                      links do YouTube e organizar seus materiais.
+                      Selecione uma subpasta para ver os materiais dela, ou continue usando os materiais da pasta principal.
                     </p>
                     <Button
                       className="mt-5 bg-gradient-primary text-primary-foreground hover:opacity-90"
@@ -949,172 +1216,39 @@ const FolderDetail = () => {
                         </div>
 
                         <Button
-                          onClick={() => setShowAddMaterial((prev) => !prev)}
+                          onClick={() => {
+                            setShowAddMaterial((prev) => !prev);
+                            setShowAddFolderMaterial(false);
+                          }}
                           className="bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-md"
                         >
                           <Plus className="mr-2 h-4 w-4" />
-                          Adicionar material
+                          Adicionar material na subpasta
                         </Button>
                       </div>
                     </motion.div>
 
-                    {showAddMaterial && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4"
-                      >
-                        <h3 className="text-base font-semibold">Novo material</h3>
+                    {showAddMaterial &&
+                      renderMaterialForm(
+                        addMaterialToSubFolder,
+                        () => {
+                          setShowAddMaterial(false);
+                          resetMaterialForm();
+                        },
+                        "Novo material da subpasta"
+                      )}
 
-                        <div className="flex gap-2 flex-wrap">
-                          <Button
-                            type="button"
-                            variant={materialType === "note" ? "default" : "outline"}
-                            onClick={() => setMaterialType("note")}
-                          >
-                            <NotebookPen className="mr-2 h-4 w-4" />
-                            Nota de texto
-                          </Button>
-
-                          <Button
-                            type="button"
-                            variant={materialType === "youtube" ? "default" : "outline"}
-                            onClick={() => setMaterialType("youtube")}
-                          >
-                            <Youtube className="mr-2 h-4 w-4" />
-                            Link do YouTube
-                          </Button>
-                        </div>
-
-                        <input
-                          value={materialTitle}
-                          onChange={(e) => setMaterialTitle(e.target.value)}
-                          placeholder="Título do material"
-                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
-                        />
-
-                        {materialType === "note" ? (
-                          <textarea
-                            value={materialContent}
-                            onChange={(e) => setMaterialContent(e.target.value)}
-                            placeholder="Escreva a nota ou cole o conteúdo aqui"
-                            className="min-h-[140px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
-                          />
-                        ) : (
-                          <input
-                            value={materialUrl}
-                            onChange={(e) => setMaterialUrl(e.target.value)}
-                            placeholder="Cole a URL do vídeo do YouTube"
-                            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
-                          />
-                        )}
-
-                        <div className="flex gap-3">
-                          <Button onClick={addMaterial}>Salvar material</Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => setShowAddMaterial(false)}
-                          >
-                            Cancelar
-                          </Button>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {selectedSubFolder.materials.length === 0 ? (
-                      <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
-                        <FileText className="mb-4 h-12 w-12 text-hero-muted" />
-                        <h3 className="text-xl font-semibold">
-                          Nenhum material nesta subpasta ainda
-                        </h3>
-                        <p className="mt-2 max-w-xl text-sm text-hero-muted">
-                          Adicione notas ou links do YouTube para começar a montar o
-                          conteúdo desta subpasta.
-                        </p>
-                        <Button
-                          className="mt-5 bg-gradient-primary text-primary-foreground hover:opacity-90"
-                          onClick={() => setShowAddMaterial(true)}
-                        >
-                          <Plus className="mr-2 h-4 w-4" />
-                          Adicionar primeiro material
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="grid gap-4">
-                        {selectedSubFolder.materials.map((material) => (
-                          <motion.div
-                            key={material.id}
-                            whileHover={{ scale: 1.01 }}
-                            transition={{ type: "spring", stiffness: 220, damping: 20 }}
-                            className="cursor-pointer rounded-3xl border border-white/10 bg-white/5 p-5 transition-all hover:bg-white/10"
-                          >
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex items-start gap-3">
-                                <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
-                                  {material.type === "note" ? (
-                                    <NotebookPen className="h-5 w-5 text-primary" />
-                                  ) : (
-                                    <Youtube className="h-5 w-5 text-red-400" />
-                                  )}
-                                </div>
-
-                                <div>
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="font-semibold">{material.title}</h3>
-                                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-hero-muted">
-                                      {material.type === "note" ? "Nota" : "YouTube"}
-                                    </span>
-                                  </div>
-
-                                  <p className="mt-1 text-xs text-hero-muted">
-                                    Criado em {formatDate(material.createdAt)}
-                                  </p>
-
-                                  {material.type === "note" && material.content && (
-                                    <p className="mt-3 max-w-3xl text-sm text-hero-muted line-clamp-3">
-                                      {material.content}
-                                    </p>
-                                  )}
-
-                                  {material.type === "youtube" && material.url && (
-                                    <a
-                                      href={material.url}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="mt-3 inline-block text-sm text-primary underline"
-                                    >
-                                      Abrir vídeo
-                                    </a>
-                                  )}
-
-                                  <div className="mt-4 flex flex-wrap gap-2">
-                                    <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
-                                      Fonte: {material.sourceType || "não definida"}
-                                    </span>
-                                    <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
-                                      Contexto salvo
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => deleteMaterial(material.id)}
-                                className="text-red-400 hover:bg-white/10"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
+                    {renderMaterialsList(
+                      selectedSubFolder.materials,
+                      deleteSubFolderMaterial,
+                      "Nenhum material nesta subpasta ainda",
+                      "Adicione notas ou links do YouTube para montar o conteúdo desta subpasta.",
+                      () => setShowAddMaterial(true)
                     )}
                   </>
                 )}
               </div>
-            </div>
+            </section>
           </TabsContent>
 
           <TabsContent value="chat" className="mt-6">
