@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Brain,
@@ -10,15 +10,21 @@ import {
   Play,
   ChevronRight,
   Clock3,
+  Edit,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { supabase } from "@/lib/supabase";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const [editing, setEditing] = useState(false);
+  const [newName, setNewName] = useState("");
 
   const userName = useMemo(() => {
     return (
@@ -29,6 +35,18 @@ const Dashboard = () => {
       "estudante"
     );
   }, [user]);
+
+  const handleSaveName = async () => {
+    if (!newName) return;
+
+    await supabase.auth.updateUser({
+      data: {
+        display_name: newName,
+      },
+    });
+
+    window.location.reload(); // atualiza para mostrar novo nome
+  };
 
   const cards = [
     {
@@ -92,9 +110,36 @@ const Dashboard = () => {
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 space-y-10">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <h1 className="text-4xl font-bold">
-            Bem-vindo, <span className="text-primary">{userName}</span>
-          </h1>
+          
+          {/* TÍTULO COM EDITAR */}
+          <div className="flex items-center gap-3">
+            <h1 className="text-4xl font-bold">
+              Bem-vindo, <span className="text-primary">{userName}</span>
+            </h1>
+
+            <button
+              onClick={() => setEditing(!editing)}
+              className="p-2 rounded-lg bg-white/10 hover:bg-white/20"
+            >
+              <Edit className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* EDITAR NOME */}
+          {editing && (
+            <div className="mt-4 flex gap-2">
+              <Input
+                placeholder="Novo nome"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+
+              <Button onClick={handleSaveName}>
+                Salvar
+              </Button>
+            </div>
+          )}
+
           <p className="mt-2 text-hero-muted">
             Continue seus estudos com foco.
           </p>
