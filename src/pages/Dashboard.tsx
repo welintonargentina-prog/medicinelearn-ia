@@ -21,8 +21,14 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const userName = useMemo(() => {
-    return user?.email || "estudante";
-  }, [user?.email]);
+    return (
+      user?.user_metadata?.display_name ||
+      user?.user_metadata?.full_name ||
+      user?.user_metadata?.name ||
+      user?.email ||
+      "estudante"
+    );
+  }, [user]);
 
   const cards = [
     {
@@ -57,7 +63,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-hero text-hero-foreground">
-      {/* HEADER */}
       <header className="border-b border-white/10 glass">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <Link to="/dashboard" className="flex items-center gap-2">
@@ -85,28 +90,22 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* MAIN */}
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 space-y-10">
-
-        {/* HEADER TEXT */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <h1 className="text-4xl font-bold">
-            Bem-vindo,{" "}
-            <span className="text-primary">{userName}</span>
+            Bem-vindo, <span className="text-primary">{userName}</span>
           </h1>
-          <p className="text-hero-muted mt-2">
+          <p className="mt-2 text-hero-muted">
             Continue seus estudos com foco.
           </p>
         </motion.div>
 
-        {/* CONTINUAR ESTUDANDO */}
         <motion.section
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="rounded-3xl border border-white/10 bg-white/5 p-6"
         >
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-
             <div className="flex items-start gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
                 <Brain className="h-8 w-8 text-primary" />
@@ -117,11 +116,11 @@ const Dashboard = () => {
                   Continuar estudando
                 </p>
 
-                <h2 className="text-2xl font-bold mt-1">
+                <h2 className="mt-1 text-2xl font-bold">
                   Anatomia &gt; Sistema Nervoso
                 </h2>
 
-                <p className="flex items-center gap-2 text-sm text-hero-muted mt-1">
+                <p className="mt-1 flex items-center gap-2 text-sm text-hero-muted">
                   <Clock3 className="h-4 w-4" />
                   Último acesso há 2 horas
                 </p>
@@ -138,7 +137,6 @@ const Dashboard = () => {
           </div>
         </motion.section>
 
-        {/* CARDS PRINCIPAIS */}
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {cards.map((card, index) => {
             const Icon = card.icon;
@@ -151,17 +149,15 @@ const Dashboard = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ scale: 1.02 }}
-                className="text-left rounded-3xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition"
+                className="rounded-3xl border border-white/10 bg-white/5 p-6 text-left transition hover:bg-white/10"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
                   <Icon className="h-5 w-5 text-primary" />
                 </div>
 
-                <h3 className="mt-4 text-xl font-semibold">
-                  {card.title}
-                </h3>
+                <h3 className="mt-4 text-xl font-semibold">{card.title}</h3>
 
-                <p className="text-sm text-hero-muted mt-2">
+                <p className="mt-2 text-sm text-hero-muted">
                   {card.description}
                 </p>
 
@@ -173,7 +169,6 @@ const Dashboard = () => {
             );
           })}
         </section>
-
       </main>
     </div>
   );
