@@ -195,17 +195,17 @@ const difficultyLabel = (difficulty: Difficulty) => {
 };
 
 const correctionModeLabel = (mode: CorrectionMode) => {
-  if (mode === "instant") return "Corrigir na hora";
-  return "Corrigir no final";
+  if (mode === "instant") return "Mostrar resposta na hora";
+  return "Mostrar resposta só no final";
 };
 
-const FlashcardPreview = ({
+function FlashcardPreview({
   card,
   config,
 }: {
   card: FlashcardItem;
   config: FlashcardConfig;
-}) => {
+}) {
   const [flipped, setFlipped] = useState(false);
 
   useEffect(() => {
@@ -225,58 +225,73 @@ const FlashcardPreview = ({
   const canFlip = config.displayMode === "click-to-flip";
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        if (canFlip) setFlipped((prev) => !prev);
-      }}
-      className={`w-full rounded-3xl border border-white/10 bg-white/5 p-5 text-left transition-all ${
-        canFlip ? "hover:bg-white/10 cursor-pointer" : "cursor-default"
-      }`}
-    >
-      {!flipped ? (
-        <div className="space-y-3">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-hero-muted">
-              {frontLabel}
-            </p>
-            <p className="font-medium">{frontContent}</p>
-          </div>
+    <div className="flex justify-center">
+      <button
+        type="button"
+        onClick={() => {
+          if (canFlip) setFlipped((prev) => !prev);
+        }}
+        className="group w-full max-w-[420px] [perspective:1200px]"
+      >
+        <div
+          className={`relative h-[260px] w-full rounded-[28px] transition-transform duration-500 [transform-style:preserve-3d] ${
+            flipped ? "[transform:rotateY(180deg)]" : ""
+          }`}
+        >
+          <div className="absolute inset-0 rounded-[28px] border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.25)] [backface-visibility:hidden]">
+            <div className="flex h-full flex-col justify-between text-left">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.22em] text-hero-muted">
+                  {frontLabel}
+                </p>
 
-          {config.displayMode === "front-back" && (
-            <div>
-              <p className="text-xs uppercase tracking-wide text-hero-muted">
-                {backLabel}
-              </p>
-              <p className="text-sm text-hero-muted">{backContent}</p>
+                <div className="mt-6 flex h-[140px] items-center justify-center text-center">
+                  <p className="text-2xl font-semibold leading-snug text-hero-foreground">
+                    {frontContent}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-hero-muted">
+                <span>Flashcard</span>
+                {canFlip ? (
+                  <span className="text-primary">Clique para virar</span>
+                ) : (
+                  <span>Frente e verso visíveis</span>
+                )}
+              </div>
             </div>
-          )}
-
-          {canFlip && (
-            <p className="text-xs text-primary flex items-center gap-1">
-              <RotateCcw className="h-3.5 w-3.5" />
-              Clique para virar o cartão
-            </p>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-hero-muted">
-              {backLabel}
-            </p>
-            <p className="font-medium">{backContent}</p>
           </div>
 
-          <p className="text-xs text-primary flex items-center gap-1">
-            <RotateCcw className="h-3.5 w-3.5" />
-            Clique para voltar
-          </p>
+          <div className="absolute inset-0 rounded-[28px] border border-primary/20 bg-gradient-to-br from-primary/15 to-white/5 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.25)] [transform:rotateY(180deg)] [backface-visibility:hidden]">
+            <div className="flex h-full flex-col justify-between text-left">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.22em] text-hero-muted">
+                  {backLabel}
+                </p>
+
+                <div className="mt-6 flex h-[140px] items-center justify-center text-center">
+                  <p className="text-lg font-medium leading-relaxed text-hero-foreground">
+                    {backContent}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-hero-muted">
+                <span>Verso</span>
+                {canFlip ? (
+                  <span className="text-primary">Clique para voltar</span>
+                ) : (
+                  <span>Frente e verso visíveis</span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      )}
-    </button>
+      </button>
+    </div>
   );
-};
+}
 
 const FolderDetail = () => {
   const { folderId } = useParams<{ folderId: string }>();
@@ -1189,6 +1204,7 @@ const FolderDetail = () => {
                   <Button
                     variant="outline"
                     onClick={() => setShowQuizConfig((prev) => !prev)}
+                    className="border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10 hover:text-hero-foreground"
                   >
                     <SlidersHorizontal className="mr-2 h-4 w-4" />
                     Configurar
@@ -1446,6 +1462,7 @@ const FolderDetail = () => {
                   <Button
                     variant="outline"
                     onClick={() => setShowFlashcardSettings((prev) => !prev)}
+                    className="border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10 hover:text-hero-foreground"
                   >
                     <SlidersHorizontal className="mr-2 h-4 w-4" />
                     Configurar
@@ -1470,7 +1487,9 @@ const FolderDetail = () => {
                 </span>
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
                   Resposta na{" "}
-                  {flashcardConfig.answerPosition === "back" ? "parte de trás" : "parte da frente"}
+                  {flashcardConfig.answerPosition === "back"
+                    ? "parte de trás"
+                    : "parte da frente"}
                 </span>
               </div>
             </div>
@@ -1530,9 +1549,7 @@ const FolderDetail = () => {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => {
-                      setFlashcardConfig(defaultFlashcardConfig);
-                    }}
+                    onClick={() => setFlashcardConfig(defaultFlashcardConfig)}
                   >
                     Restaurar padrão
                   </Button>
@@ -1560,7 +1577,10 @@ const FolderDetail = () => {
 
                 <div className="flex gap-3">
                   <Button onClick={createFlashcard}>Salvar flashcard</Button>
-                  <Button variant="outline" onClick={() => setShowFlashcardForm(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowFlashcardForm(false)}
+                  >
                     Cancelar
                   </Button>
                 </div>
@@ -1576,12 +1596,12 @@ const FolderDetail = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 lg:grid-cols-2">
                 {flashcards.map((card) => (
                   <div key={card.id} className="space-y-3">
                     <FlashcardPreview card={card} config={flashcardConfig} />
 
-                    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                    <div className="mx-auto w-full max-w-[420px] flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                       <p className="text-xs text-hero-muted">
                         {formatDateTime(card.createdAt)}
                       </p>
