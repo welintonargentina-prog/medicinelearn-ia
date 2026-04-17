@@ -489,6 +489,19 @@ const FolderDetail = () => {
     () => (activeContextId ? computePerformance(activeContextId) : null),
     [activeContextId]
   );
+    const totalReviews = flashcardReviews.length;
+  const correctReviews = flashcardReviews.filter(
+    (review) => review.result === "correct"
+  ).length;
+  const wrongReviews = flashcardReviews.filter(
+    (review) => review.result === "wrong"
+  ).length;
+
+  const correctRate =
+    totalReviews > 0 ? Math.round((correctReviews / totalReviews) * 100) : 0;
+
+  const wrongRate =
+    totalReviews > 0 ? Math.round((wrongReviews / totalReviews) * 100) : 0;
 
   const createSubFolder = () => {
     if (!newSubFolderName.trim()) return;
@@ -1898,8 +1911,73 @@ const FolderDetail = () => {
 )}
 </TabsContent>
 
-<TabsContent value="desempenho" className="mt-6">
-{performance && <PerformancePanel performance={performance} />}
+<TabsContent value="desempenho" className="mt-6 space-y-6">
+  {performance && <PerformancePanel performance={performance} />}
+
+  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+      <p className="text-sm text-hero-muted">Revisões de flashcards</p>
+      <h3 className="mt-2 text-3xl font-bold">{totalReviews}</h3>
+    </div>
+
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+      <p className="text-sm text-hero-muted">Acertos</p>
+      <h3 className="mt-2 text-3xl font-bold">{correctReviews}</h3>
+    </div>
+
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+      <p className="text-sm text-hero-muted">Erros</p>
+      <h3 className="mt-2 text-3xl font-bold">{wrongReviews}</h3>
+    </div>
+
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+      <p className="text-sm text-hero-muted">Taxa de acerto</p>
+      <h3 className="mt-2 text-3xl font-bold">{correctRate}%</h3>
+    </div>
+
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+      <p className="text-sm text-hero-muted">Taxa de erro</p>
+      <h3 className="mt-2 text-3xl font-bold">{wrongRate}%</h3>
+    </div>
+  </div>
+
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <h3 className="text-lg font-semibold">Desempenho dos flashcards</h3>
+
+    {totalReviews === 0 ? (
+      <p className="mt-3 text-sm text-hero-muted">
+        Ainda não há revisões de flashcards neste contexto.
+      </p>
+    ) : (
+      <div className="mt-4 space-y-4">
+        <div>
+          <div className="mb-2 flex items-center justify-between text-sm">
+            <span className="text-hero-muted">Acertos</span>
+            <span className="font-medium">{correctRate}%</span>
+          </div>
+          <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-emerald-500 transition-all"
+              style={{ width: `${correctRate}%` }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-2 flex items-center justify-between text-sm">
+            <span className="text-hero-muted">Erros</span>
+            <span className="font-medium">{wrongRate}%</span>
+          </div>
+          <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-red-500 transition-all"
+              style={{ width: `${wrongRate}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
 </TabsContent>
 </Tabs>
  </main>
