@@ -1832,73 +1832,71 @@ const FolderDetail = () => {
               </div>
             )}
 
-            {flashcards.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
-                <Layers3 className="mx-auto mb-3 h-10 w-10 text-hero-muted" />
-                <h3 className="text-lg font-semibold">Nenhum flashcard neste contexto</h3>
-                <p className="mt-2 text-sm text-hero-muted">
-                  Crie flashcards para esta pasta ou subpasta.
-                </p>
-              </div>
-            ) : (
- <div className="grid gap-6 lg:grid-cols-2">
-  {flashcards.map((card) => (
-    <div key={card.id} className="space-y-3">
-      <FlashcardPreview card={card} config={flashcardConfig} />
+        {flashcards.length === 0 ? (
+  <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
+    <Layers3 className="mx-auto mb-3 h-10 w-10 text-hero-muted" />
+    <h3 className="text-lg font-semibold">Nenhum flashcard neste contexto</h3>
+    <p className="mt-2 text-sm text-hero-muted">
+      Crie flashcards para esta pasta ou subpasta.
+    </p>
+  </div>
+) : (
+  <div className="grid gap-6 lg:grid-cols-2">
+    {flashcards.map((card) => (
+      <div key={card.id} className="space-y-3">
+        <FlashcardPreview card={card} config={flashcardConfig} />
 
-      <div className="flex gap-2 justify-center">
-        <Button
-          onClick={() => {
-            const review = {
-              id: crypto.randomUUID(),
-              flashcardId: card.id,
-              createdAt: new Date().toISOString(),
-              result: "correct" as const,
-            };
+        <div className="flex gap-2 justify-center">
+          <Button
+            onClick={() => {
+              const review = {
+                id: crypto.randomUUID(),
+                flashcardId: card.id,
+                createdAt: new Date().toISOString(),
+                result: "correct" as const,
+              };
+              setFlashcardReviews((prev) => [review, ...prev]);
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            Acertei
+          </Button>
 
-            setFlashcardReviews((prev) => [review, ...prev]);
-          }}
-          className="bg-green-600 hover:bg-green-700 text-white"
-        >
-          Acertei
-        </Button>
+          <Button
+            onClick={() => {
+              const review = {
+                id: crypto.randomUUID(),
+                flashcardId: card.id,
+                createdAt: new Date().toISOString(),
+                result: "wrong" as const,
+              };
+              setFlashcardReviews((prev) => [review, ...prev]);
+            }}
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            Errei
+          </Button>
+        </div>
 
-        <Button
-          onClick={() => {
-            const review = {
-              id: crypto.randomUUID(),
-              flashcardId: card.id,
-              createdAt: new Date().toISOString(),
-              result: "wrong" as const,
-            };
+        <div className="mx-auto w-full max-w-[420px] flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+          <p className="text-xs text-hero-muted">
+            {formatDateTime(card.createdAt)}
+          </p>
 
-            setFlashcardReviews((prev) => [review, ...prev]);
-          }}
-          className="bg-red-600 hover:bg-red-700 text-white"
-        >
-          Errei
-        </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => deleteFlashcard(card.id)}
+            className="text-red-400 hover:bg-white/10"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-
-      <div className="mx-auto w-full max-w-[420px] flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-        <p className="text-xs text-hero-muted">
-          {formatDateTime(card.createdAt)}
-        </p>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => deleteFlashcard(card.id)}
-          className="text-red-400 hover:bg-white/10"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
- ))
- </div>
- )}
- </TabsContent>
+    ))}
+  </div>
+)}
+</TabsContent>
 
 <TabsContent value="desempenho" className="mt-6">
 {performance && <PerformancePanel performance={performance} />}
