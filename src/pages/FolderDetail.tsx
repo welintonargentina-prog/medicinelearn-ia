@@ -298,7 +298,10 @@ function FlashcardPreview({
 
 const FolderDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { folderId } = useParams<{ folderId: string }>();
+ const { folderId, subFolderId } = useParams<{
+  folderId: string;
+  subFolderId?: string;
+}>();
   const { signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -353,26 +356,32 @@ const FolderDetail = () => {
     storedFolders.find((f) => f.id === folderId) ||
     mockFolders.find((f) => f.id === folderId);
 
-  useEffect(() => {
-    if (!folderId) return;
+ useEffect(() => {
+  if (!folderId) return;
 
-    const saved = localStorage.getItem(SUBFOLDERS_STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as SubFolder[];
-        setSubFolders(parsed);
-        if (parsed.length > 0) {
-          setSelectedSubFolderId((prev) => prev ?? parsed[0].id);
-        }
-      } catch {
-        localStorage.removeItem(SUBFOLDERS_STORAGE_KEY);
-        setSubFolders([]);
+  const saved = localStorage.getItem(SUBFOLDERS_STORAGE_KEY);
+
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved) as SubFolder[];
+      setSubFolders(parsed);
+
+      if (subFolderId) {
+        const exists = parsed.some((sub) => sub.id === subFolderId);
+        setSelectedSubFolderId(exists ? subFolderId : null);
+      } else {
+        setSelectedSubFolderId(null);
       }
-    } else {
+    } catch {
+      localStorage.removeItem(SUBFOLDERS_STORAGE_KEY);
       setSubFolders([]);
+      setSelectedSubFolderId(null);
     }
-  }, [folderId, SUBFOLDERS_STORAGE_KEY]);
-
+  } else {
+    setSubFolders([]);
+    setSelectedSubFolderId(null);
+  }
+}, [folderId, subFolderId, SUBFOLDERS_STORAGE_KEY]);
   useEffect(() => {
     if (!folderId) return;
     localStorage.setItem(SUBFOLDERS_STORAGE_KEY, JSON.stringify(subFolders));
@@ -852,7 +861,7 @@ const FolderDetail = () => {
 
   <div className="px-2 pb-4 space-y-2">
     <button
-      onClick={() => setSelectedSubFolderId(null)}
+      onClick={() => navigate(`/folders/${folderId}`)}
       className={cn(
         "w-full rounded-xl text-left transition border",
         sidebarOpen ? "px-3 py-3" : "px-2 py-3 flex justify-center",
@@ -877,7 +886,7 @@ const FolderDetail = () => {
       return (
         <button
           key={subFolder.id}
-          onClick={() => setSelectedSubFolderId(subFolder.id)}
+         onClick={() => navigate(`/folders/${folderId}/sub/${subFolder.id}`)}
           className={cn(
             "w-full rounded-xl text-left transition border",
             sidebarOpen ? "px-3 py-3" : "px-2 py-3 flex justify-center",
