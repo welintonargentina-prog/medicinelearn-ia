@@ -121,11 +121,17 @@ type SubFolder = {
   createdAt: string;
   materials: MaterialItem[];
 };
-
+type FlashcardReviewItem = {
+  id: string;
+  flashcardId: string;
+  createdAt: string;
+  result: "correct" | "wrong";
+};
 type StudyContextData = {
   chatHistory: ChatMessage[];
   quizHistory: QuizHistoryItem[];
   flashcards: FlashcardItem[];
+  flashcardReviews: FlashcardReviewItem[];
   quizConfig: QuizConfig;
   flashcardConfig: FlashcardConfig;
 };
@@ -177,6 +183,7 @@ const createEmptyContext = (): StudyContextData => ({
   chatHistory: [],
   quizHistory: [],
   flashcards: [],
+  flashcardReviews: [],
   quizConfig: defaultQuizConfig,
   flashcardConfig: defaultFlashcardConfig,
 });
@@ -335,6 +342,7 @@ const FolderDetail = () => {
   const [flashcards, setFlashcards] = useState<FlashcardItem[]>([]);
   const [flashcardConfig, setFlashcardConfig] =
     useState<FlashcardConfig>(defaultFlashcardConfig);
+  const [flashcardReviews, setFlashcardReviews] = useState<FlashcardReviewItem[]>([]);
   const [showFlashcardSettings, setShowFlashcardSettings] = useState(false);
 
   const [showFlashcardForm, setShowFlashcardForm] = useState(false);
@@ -434,6 +442,7 @@ const FolderDetail = () => {
         setFlashcards(parsed.flashcards || []);
         setQuizConfig(parsed.quizConfig || defaultQuizConfig);
         setFlashcardConfig(parsed.flashcardConfig || defaultFlashcardConfig);
+        setFlashcardReviews(parsed.flashcardReviews || []);
       } catch {
         const empty = createEmptyContext();
         setChatHistory(empty.chatHistory);
@@ -456,12 +465,13 @@ const FolderDetail = () => {
     if (!activeContextId) return;
 
     const data: StudyContextData = {
-      chatHistory,
-      quizHistory,
-      flashcards,
-      quizConfig,
-      flashcardConfig,
-    };
+  chatHistory,
+  quizHistory,
+  flashcards,
+  flashcardReviews,
+  quizConfig,
+  flashcardConfig,
+};
 
     localStorage.setItem(CONTEXT_STORAGE_KEY, JSON.stringify(data));
   }, [
@@ -472,6 +482,7 @@ const FolderDetail = () => {
     flashcardConfig,
     CONTEXT_STORAGE_KEY,
     activeContextId,
+    flashcardReviews,
   ]);
 
   const performance = useMemo(
@@ -1830,33 +1841,62 @@ const FolderDetail = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-6 lg:grid-cols-2">
-                {flashcards.map((card) => (
-                  <div key={card.id} className="space-y-3">
-                    <FlashcardPreview card={card} config={flashcardConfig} />
+ <div className="grid gap-6 lg:grid-cols-2">
+  {flashcards.map((card) => (
+    <div key={card.id} className="space-y-3">
+      <FlashcardPreview card={card} config={flashcardConfig} />
 
-                    <div className="mx-auto w-full max-w-[420px] flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                      <p className="text-xs text-hero-muted">
-                        {formatDateTime(card.createdAt)}
-                      </p>
+      <div className="flex gap-2 justify-center">
+        <Button
+          onClick={() => {
+            const review = {
+              id: crypto.randomUUID(),
+              flashcardId: card.id,
+              createdAt: new Date().toISOString(),
+              result: "correct" as const,
+            };
 
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteFlashcard(card.id)}
-                        className="text-red-400 hover:bg-white/10"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
+            setFlashcardReviews((prev) => [review, ...prev]);
+          }}
+          className="bg-green-600 hover:bg-green-700 text-white"
+        >
+          Acertei
+        </Button>
 
-          <TabsContent value="desempenho" className="mt-6">
-            {performance && <PerformancePanel performance={performance} />}
+        <Button
+          onClick={() => {
+            const review = {
+              id: crypto.randomUUID(),
+              flashcardId: card.id,
+              createdAt: new Date().toISOString(),
+              result: "wrong" as const,
+            };
+
+            setFlashcardReviews((prev) => [review, ...prev]);
+          }}
+          className="bg-red-600 hover:bg-red-700 text-white"
+        >
+          Errei
+        </Button>
+      </div>
+
+      <div className="mx-auto w-full max-w-[420px] flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+        <p className="text-xs text-hero-muted">
+          {formatDateTime(card.createdAt)}
+        </p>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => deleteFlashcard(card.id)}
+          className="text-red-400 hover:bg-white/10"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  ))}
+</div>
           </TabsContent>
         </Tabs>
           </main>
