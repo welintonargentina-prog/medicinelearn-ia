@@ -1895,14 +1895,19 @@ const FolderDetail = () => {
         </Button>
       </div>
     </div>
-))}
-</div>
-          </TabsContent>
-        </Tabs>
-          </main>
-    </div>
-  </div>
-  );
-};
+1898: ))}
+1899: </div>
+1900:           )}
+1901:           </TabsContent>
+1902: 
+1903:           <TabsContent value="desempenho" className="mt-6">
+1904:             {performance && <PerformancePanel performance={performance} />}
+1905:           </TabsContent>
+1906:         </Tabs>
+1907:           </main>
+1908:     </div>
+1909:   </div>
+1910:   );
+1911: };
 
 export default FolderDetail;
