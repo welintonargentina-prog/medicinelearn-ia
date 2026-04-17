@@ -1,8 +1,8 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { computePerformance } from "@/lib/quizStorage";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimuladosTab } from "@/components/simulados/SimuladosTab";
-import { PerformancePanel } from "@/components/simulados/PerformancePanel";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -482,10 +482,7 @@ const FolderDetail = () => {
     flashcardReviews,
   ]);
 
-  const performance = useMemo(
-    () => (activeContextId ? computePerformance(activeContextId) : null),
-    [activeContextId]
-  );
+
     const totalReviews = flashcardReviews.length;
   const correctReviews = flashcardReviews.filter(
     (review) => review.result === "correct"
@@ -1876,7 +1873,7 @@ const FolderDetail = () => {
 </TabsContent>
 
 <TabsContent value="desempenho" className="mt-6 space-y-6">
-  {performance && <PerformancePanel performance={performance} />}
+  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
 
   <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
     <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
