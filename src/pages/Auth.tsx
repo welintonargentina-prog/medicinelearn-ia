@@ -17,10 +17,7 @@ const Auth = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // ✅ NOVO
   const [displayName, setDisplayName] = useState("");
-
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) {
@@ -46,14 +43,14 @@ const Auth = () => {
           password,
           options: {
             data: {
-              display_name: displayName, // ✅ SALVA NOME
+              display_name: displayName,
             },
           },
         });
 
         if (error) throw error;
 
-        toast.success("Conta criada com sucesso. Verifique seu email.");
+        toast.success("Conta criada. Verifique seu email.");
         setMode("login");
       } else if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
@@ -62,6 +59,7 @@ const Auth = () => {
         });
 
         if (error) throw error;
+
         navigate("/dashboard");
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -74,7 +72,7 @@ const Auth = () => {
         setMode("login");
       }
     } catch (error: any) {
-      toast.error(error.message || "Ocorreu um erro.");
+      toast.error(error.message || "Erro inesperado.");
     } finally {
       setSubmitting(false);
     }
@@ -122,6 +120,7 @@ const Auth = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+
             {/* EMAIL */}
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-hero-muted" />
@@ -135,7 +134,7 @@ const Auth = () => {
               />
             </div>
 
-            {/* 👇 NOVO CAMPO NOME */}
+            {/* NOME */}
             {mode === "signup" && (
               <Input
                 type="text"
@@ -172,21 +171,23 @@ const Auth = () => {
             </Button>
           </form>
 
+          {/* LINKS */}
           <div className="mt-6 text-center text-sm">
+
             {mode === "login" && (
               <>
                 <button
                   onClick={() => setMode("recovery")}
-                  className="text-primary"
+                  className="text-primary hover:underline"
                 >
                   Esqueci minha senha
                 </button>
 
-                <p className="mt-2">
+                <p className="mt-2 text-hero-muted">
                   Não tem conta?{" "}
                   <button
                     onClick={() => setMode("signup")}
-                    className="text-primary font-semibold"
+                    className="font-semibold text-primary hover:underline"
                   >
                     Criar conta
                   </button>
@@ -195,11 +196,11 @@ const Auth = () => {
             )}
 
             {mode === "signup" && (
-              <p>
+              <p className="text-hero-muted">
                 Já tem conta?{" "}
                 <button
                   onClick={() => setMode("login")}
-                  className="text-primary font-semibold"
+                  className="font-semibold text-primary hover:underline"
                 >
                   Entrar
                 </button>
@@ -209,13 +210,14 @@ const Auth = () => {
             {mode === "recovery" && (
               <button
                 onClick={() => setMode("login")}
-                className="flex items-center justify-center gap-1 text-primary"
+                className="flex items-center justify-center gap-1 text-primary hover:underline"
               >
                 <ArrowLeft className="h-3 w-3" />
                 Voltar
               </button>
             )}
           </div>
+
         </div>
       </motion.div>
     </div>
