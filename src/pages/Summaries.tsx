@@ -75,15 +75,15 @@ const Summaries = () => {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 space-y-8">
-        {/* Back link */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate("/dashboard")}
-          className="text-hero-muted hover:text-hero-foreground hover:bg-white/10 -ml-2"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Voltar ao Dashboard
-        </Button>
+       <div className="flex items-center gap-2 mb-6">
+  <button
+    onClick={() => navigate("/dashboard")}
+    className="flex items-center gap-2 text-hero-muted hover:text-white transition"
+  >
+    <ArrowLeft className="h-5 w-5" />
+    <span>Voltar</span>
+  </button>
+</div>
 
         {/* Title */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
