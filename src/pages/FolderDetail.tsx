@@ -22,6 +22,11 @@ import {
   Send,
   Layers3,
   BookOpenText,
+  Sparkles,
+  ChevronRight,
+  Clock3,
+  SlidersHorizontal,
+  RotateCcw,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -62,12 +67,41 @@ type ChatMessage = {
   createdAt: string;
 };
 
+type QuizType = "multiple_choice" | "open" | "mixed";
+type Difficulty = "easy" | "medium" | "hard" | "mixed";
+type CorrectionMode = "instant" | "end";
+
+type QuizConfig = {
+  quizType: QuizType;
+  difficulty: Difficulty;
+  questionCount: number;
+  timerEnabled: boolean;
+  timerMinutes: number;
+  correctionMode: CorrectionMode;
+};
+
 type QuizHistoryItem = {
   id: string;
   title: string;
   createdAt: string;
   type: string;
   questionCount: number;
+  difficulty: Difficulty;
+  timerEnabled: boolean;
+  timerMinutes?: number;
+  correctionMode: CorrectionMode;
+  correctCount: number;
+  wrongCount: number;
+  correctPercentage: number;
+  wrongPercentage: number;
+};
+
+type FlashcardDisplayMode = "front-back" | "click-to-flip";
+type FlashcardAnswerPosition = "back" | "front";
+
+type FlashcardConfig = {
+  displayMode: FlashcardDisplayMode;
+  answerPosition: FlashcardAnswerPosition;
 };
 
 type FlashcardItem = {
@@ -89,6 +123,8 @@ type StudyContextData = {
   chatHistory: ChatMessage[];
   quizHistory: QuizHistoryItem[];
   flashcards: FlashcardItem[];
+  quizConfig: QuizConfig;
+  flashcardConfig: FlashcardConfig;
 };
 
 const FOLDERS_STORAGE_KEY = "medlearn_folders";
@@ -103,6 +139,20 @@ const folderColors = [
   "#ec4899",
   "#84cc16",
 ];
+
+const defaultQuizConfig: QuizConfig = {
+  quizType: "multiple_choice",
+  difficulty: "medium",
+  questionCount: 10,
+  timerEnabled: false,
+  timerMinutes: 20,
+  correctionMode: "end",
+};
+
+const defaultFlashcardConfig: FlashcardConfig = {
+  displayMode: "click-to-flip",
+  answerPosition: "back",
+};
 
 const formatDate = (date: string) =>
   new Date(date).toLocaleDateString("pt-BR", {
@@ -124,7 +174,109 @@ const createEmptyContext = (): StudyContextData => ({
   chatHistory: [],
   quizHistory: [],
   flashcards: [],
+  quizConfig: defaultQuizConfig,
+  flashcardConfig: defaultFlashcardConfig,
 });
+
+const tabTriggerClass =
+  "data-[state=active]:bg-white/15 data-[state=active]:border data-[state=active]:border-white/20 data-[state=active]:text-hero-foreground data-[state=active]:shadow-md text-hero-muted px-4 py-2.5 transition-all";
+
+const quizTypeLabel = (quizType: QuizType) => {
+  if (quizType === "multiple_choice") return "Múltipla escolha";
+  if (quizType === "open") return "Abertas";
+  return "Misto";
+};
+
+const difficultyLabel = (difficulty: Difficulty) => {
+  if (difficulty === "easy") return "Fácil";
+  if (difficulty === "medium") return "Médio";
+  if (difficulty === "hard") return "Difícil";
+  return "Misto";
+};
+
+const correctionModeLabel = (mode: CorrectionMode) => {
+  if (mode === "instant") return "Corrigir na hora";
+  return "Corrigir no final";
+};
+
+const FlashcardPreview = ({
+  card,
+  config,
+}: {
+  card: FlashcardItem;
+  config: FlashcardConfig;
+}) => {
+  const [flipped, setFlipped] = useState(false);
+
+  useEffect(() => {
+    setFlipped(false);
+  }, [card.id, config.displayMode, config.answerPosition]);
+
+  const frontLabel =
+    config.answerPosition === "back" ? "Pergunta" : "Resposta";
+  const backLabel =
+    config.answerPosition === "back" ? "Resposta" : "Pergunta";
+
+  const frontContent =
+    config.answerPosition === "back" ? card.front : card.back;
+  const backContent =
+    config.answerPosition === "back" ? card.back : card.front;
+
+  const canFlip = config.displayMode === "click-to-flip";
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (canFlip) setFlipped((prev) => !prev);
+      }}
+      className={`w-full rounded-3xl border border-white/10 bg-white/5 p-5 text-left transition-all ${
+        canFlip ? "hover:bg-white/10 cursor-pointer" : "cursor-default"
+      }`}
+    >
+      {!flipped ? (
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-hero-muted">
+              {frontLabel}
+            </p>
+            <p className="font-medium">{frontContent}</p>
+          </div>
+
+          {config.displayMode === "front-back" && (
+            <div>
+              <p className="text-xs uppercase tracking-wide text-hero-muted">
+                {backLabel}
+              </p>
+              <p className="text-sm text-hero-muted">{backContent}</p>
+            </div>
+          )}
+
+          {canFlip && (
+            <p className="text-xs text-primary flex items-center gap-1">
+              <RotateCcw className="h-3.5 w-3.5" />
+              Clique para virar o cartão
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-hero-muted">
+              {backLabel}
+            </p>
+            <p className="font-medium">{backContent}</p>
+          </div>
+
+          <p className="text-xs text-primary flex items-center gap-1">
+            <RotateCcw className="h-3.5 w-3.5" />
+            Clique para voltar
+          </p>
+        </div>
+      )}
+    </button>
+  );
+};
 
 const FolderDetail = () => {
   const { folderId } = useParams<{ folderId: string }>();
@@ -151,7 +303,13 @@ const FolderDetail = () => {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
   const [quizHistory, setQuizHistory] = useState<QuizHistoryItem[]>([]);
+  const [quizConfig, setQuizConfig] = useState<QuizConfig>(defaultQuizConfig);
+  const [showQuizConfig, setShowQuizConfig] = useState(false);
+
   const [flashcards, setFlashcards] = useState<FlashcardItem[]>([]);
+  const [flashcardConfig, setFlashcardConfig] =
+    useState<FlashcardConfig>(defaultFlashcardConfig);
+  const [showFlashcardSettings, setShowFlashcardSettings] = useState(false);
 
   const [showFlashcardForm, setShowFlashcardForm] = useState(false);
   const [flashFront, setFlashFront] = useState("");
@@ -218,17 +376,23 @@ const FolderDetail = () => {
         setChatHistory(parsed.chatHistory || []);
         setQuizHistory(parsed.quizHistory || []);
         setFlashcards(parsed.flashcards || []);
+        setQuizConfig(parsed.quizConfig || defaultQuizConfig);
+        setFlashcardConfig(parsed.flashcardConfig || defaultFlashcardConfig);
       } catch {
         const empty = createEmptyContext();
         setChatHistory(empty.chatHistory);
         setQuizHistory(empty.quizHistory);
         setFlashcards(empty.flashcards);
+        setQuizConfig(empty.quizConfig);
+        setFlashcardConfig(empty.flashcardConfig);
       }
     } else {
       const empty = createEmptyContext();
       setChatHistory(empty.chatHistory);
       setQuizHistory(empty.quizHistory);
       setFlashcards(empty.flashcards);
+      setQuizConfig(empty.quizConfig);
+      setFlashcardConfig(empty.flashcardConfig);
     }
   }, [CONTEXT_STORAGE_KEY, activeContextId]);
 
@@ -239,10 +403,20 @@ const FolderDetail = () => {
       chatHistory,
       quizHistory,
       flashcards,
+      quizConfig,
+      flashcardConfig,
     };
 
     localStorage.setItem(CONTEXT_STORAGE_KEY, JSON.stringify(data));
-  }, [chatHistory, quizHistory, flashcards, CONTEXT_STORAGE_KEY, activeContextId]);
+  }, [
+    chatHistory,
+    quizHistory,
+    flashcards,
+    quizConfig,
+    flashcardConfig,
+    CONTEXT_STORAGE_KEY,
+    activeContextId,
+  ]);
 
   const performance = useMemo(
     () => (activeContextId ? computePerformance(activeContextId) : null),
@@ -357,17 +531,32 @@ const FolderDetail = () => {
   };
 
   const createMockQuiz = () => {
+    const total = Math.max(1, quizConfig.questionCount);
+    const correct = Math.floor(Math.random() * (total + 1));
+    const wrong = total - correct;
+    const correctPercentage = Math.round((correct / total) * 100);
+    const wrongPercentage = 100 - correctPercentage;
+
     const newQuiz: QuizHistoryItem = {
       id: crypto.randomUUID(),
       title: selectedSubFolder
         ? `Simulado - ${selectedSubFolder.name}`
         : `Simulado - ${folder?.name}`,
       createdAt: new Date().toISOString(),
-      type: "Simulado padrão",
-      questionCount: 10,
+      type: quizTypeLabel(quizConfig.quizType),
+      questionCount: total,
+      difficulty: quizConfig.difficulty,
+      timerEnabled: quizConfig.timerEnabled,
+      timerMinutes: quizConfig.timerEnabled ? quizConfig.timerMinutes : undefined,
+      correctionMode: quizConfig.correctionMode,
+      correctCount: correct,
+      wrongCount: wrong,
+      correctPercentage,
+      wrongPercentage,
     };
 
     setQuizHistory((prev) => [newQuiz, ...prev]);
+    setShowQuizConfig(false);
   };
 
   const deleteQuiz = (quizId: string) => {
@@ -436,76 +625,119 @@ const FolderDetail = () => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-6">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
         <div className="flex items-center gap-2 text-sm text-hero-muted">
           <Link
             to="/folders"
-            className="hover:text-hero-foreground flex items-center gap-1"
+            className="hover:text-hero-foreground flex items-center gap-1 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" /> Pastas
           </Link>
-          <span>/</span>
+          <ChevronRight className="h-4 w-4 opacity-50" />
           <span className="text-hero-foreground">{folder.name}</span>
           {selectedSubFolder && (
             <>
-              <span>/</span>
+              <ChevronRight className="h-4 w-4 opacity-50" />
               <span className="text-hero-foreground">{selectedSubFolder.name}</span>
             </>
           )}
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">{folder.icon}</span>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-3xl shadow-glow">
+                {folder.icon}
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-hero-muted">
+                  Contexto ativo
+                </p>
+                <h1 className="mt-1 text-3xl font-bold">
+                  {folder.name}
+                  {selectedSubFolder && (
+                    <span className="text-hero-muted"> / {selectedSubFolder.name}</span>
+                  )}
+                </h1>
+                <p className="mt-1 text-sm text-hero-muted max-w-2xl">
+                  {selectedSubFolder
+                    ? "Tudo o que você fizer aqui pertence apenas a esta subpasta."
+                    : folder.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-sm text-hero-muted md:min-w-[280px]">
+              <div className="flex items-center gap-2 text-hero-foreground font-medium">
+                <Sparkles className="h-4 w-4 text-primary" />
+                Ambiente de estudo independente
+              </div>
+              <p className="mt-1 text-xs leading-relaxed">
+                Chats, simulados, flashcards e revisões ficam separados por contexto.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold">{folder.name}</h1>
-              <p className="text-sm text-hero-muted">{folder.description}</p>
+              <p className="text-xs uppercase tracking-wide text-hero-muted">
+                Você está estudando
+              </p>
+              <p className="mt-1 text-base font-semibold">
+                📁 {folder.name}
+                {selectedSubFolder && ` > 📂 ${selectedSubFolder.name}`}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 text-xs text-hero-muted">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                {subFolders.length} subpastas
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                {selectedSubFolder?.materials.length ?? 0} materiais
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                {chatHistory.length} mensagens
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                {flashcards.length} flashcards
+              </span>
             </div>
           </div>
         </motion.div>
 
         <Tabs defaultValue="materiais" className="w-full">
-          <TabsList className="bg-white/5 border border-white/10 flex flex-wrap h-auto">
-            <TabsTrigger
-              value="materiais"
-              className="data-[state=active]:bg-white/10 data-[state=active]:text-hero-foreground text-hero-muted"
-            >
+          <TabsList className="h-auto w-full flex-wrap justify-start gap-2 rounded-2xl border border-white/10 bg-white/5 p-2">
+            <TabsTrigger value="materiais" className={tabTriggerClass}>
               <FileText className="mr-1.5 h-3.5 w-3.5" /> Materiais
             </TabsTrigger>
-            <TabsTrigger
-              value="chat"
-              className="data-[state=active]:bg-white/10 data-[state=active]:text-hero-foreground text-hero-muted"
-            >
+            <TabsTrigger value="chat" className={tabTriggerClass}>
               <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Chat
             </TabsTrigger>
-            <TabsTrigger
-              value="simulados"
-              className="data-[state=active]:bg-white/10 data-[state=active]:text-hero-foreground text-hero-muted"
-            >
+            <TabsTrigger value="simulados" className={tabTriggerClass}>
               <Target className="mr-1.5 h-3.5 w-3.5" /> Simulados
             </TabsTrigger>
-            <TabsTrigger
-              value="flashcards"
-              className="data-[state=active]:bg-white/10 data-[state=active]:text-hero-foreground text-hero-muted"
-            >
+            <TabsTrigger value="flashcards" className={tabTriggerClass}>
               <Layers3 className="mr-1.5 h-3.5 w-3.5" /> Flashcards
             </TabsTrigger>
-            <TabsTrigger
-              value="desempenho"
-              className="data-[state=active]:bg-white/10 data-[state=active]:text-hero-foreground text-hero-muted"
-            >
+            <TabsTrigger value="desempenho" className={tabTriggerClass}>
               <BarChart3 className="mr-1.5 h-3.5 w-3.5" /> Desempenho
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="materiais" className="mt-6 space-y-6">
-            <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-4">
-                  <div className="flex items-center justify-between">
+          <TabsContent value="materiais" className="mt-6">
+            <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
+              <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-glow">
+                  <div className="flex items-center justify-between gap-4">
                     <div>
-                      <h2 className="text-lg font-semibold">Subpastas</h2>
-                      <p className="text-sm text-hero-muted">
+                      <h2 className="text-xl font-semibold">Subpastas</h2>
+                      <p className="mt-1 text-sm text-hero-muted">
                         Organize os conteúdos por assunto.
                       </p>
                     </div>
@@ -513,6 +745,7 @@ const FolderDetail = () => {
                     <Button
                       size="sm"
                       onClick={() => setShowCreateSubFolder((prev) => !prev)}
+                      className="bg-gradient-primary text-primary-foreground hover:opacity-90"
                     >
                       <Plus className="mr-1 h-4 w-4" />
                       Nova
@@ -520,7 +753,11 @@ const FolderDetail = () => {
                   </div>
 
                   {showCreateSubFolder && (
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3"
+                    >
                       <input
                         value={newSubFolderName}
                         onChange={(e) => setNewSubFolderName(e.target.value)}
@@ -559,28 +796,40 @@ const FolderDetail = () => {
                           Cancelar
                         </Button>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
 
                   {subFolders.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm text-hero-muted">
-                      Nenhuma subpasta criada ainda
+                    <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center">
+                      <FolderOpen className="mx-auto mb-3 h-8 w-8 text-hero-muted" />
+                      <p className="font-medium">Nenhuma subpasta criada ainda</p>
+                      <p className="mt-1 text-sm text-hero-muted">
+                        Crie sua primeira subpasta para organizar melhor o estudo.
+                      </p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="mt-4 space-y-3">
                       {subFolders.map((subFolder) => {
                         const isSelected = selectedSubFolderId === subFolder.id;
 
                         return (
-                          <button
+                          <motion.button
                             key={subFolder.id}
+                            whileHover={{ scale: 1.015 }}
+                            transition={{ type: "spring", stiffness: 220, damping: 18 }}
                             onClick={() => setSelectedSubFolderId(subFolder.id)}
-                            className={`w-full rounded-xl border p-4 text-left transition ${
+                            className={`relative w-full overflow-hidden rounded-2xl border p-4 text-left transition ${
                               isSelected
-                                ? "border-white/25 bg-white/10"
+                                ? "border-primary bg-primary/10 shadow-lg"
                                 : "border-white/10 bg-white/5 hover:bg-white/10"
                             }`}
                           >
+                            <div
+                              className={`absolute left-0 top-0 h-full w-1 ${
+                                isSelected ? "bg-primary" : "bg-transparent"
+                              }`}
+                            />
+
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex items-start gap-3">
                                 <div
@@ -616,7 +865,7 @@ const FolderDetail = () => {
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
-                          </button>
+                          </motion.button>
                         );
                       })}
                     </div>
@@ -626,52 +875,80 @@ const FolderDetail = () => {
 
               <div className="space-y-4">
                 {!selectedSubFolder ? (
-                  <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
-                    <FolderOpen className="mx-auto mb-3 h-10 w-10 text-hero-muted" />
-                    <h3 className="text-lg font-semibold">
-                      Selecione uma subpasta
-                    </h3>
-                    <p className="mt-2 text-sm text-hero-muted">
-                      Escolha uma subpasta para adicionar notas, links do YouTube e
-                      organizar seus materiais.
+                  <div className="flex min-h-[360px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
+                    <FolderOpen className="mb-4 h-12 w-12 text-hero-muted" />
+                    <h3 className="text-2xl font-semibold">Nenhuma subpasta selecionada</h3>
+                    <p className="mt-2 max-w-xl text-sm text-hero-muted">
+                      Crie ou selecione uma subpasta para começar a adicionar notas,
+                      links do YouTube e organizar seus materiais.
                     </p>
+                    <Button
+                      className="mt-5 bg-gradient-primary text-primary-foreground hover:opacity-90"
+                      onClick={() => setShowCreateSubFolder(true)}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Criar subpasta
+                    </Button>
                   </div>
                 ) : (
                   <>
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="rounded-3xl border border-white/10 bg-gradient-to-r from-white/5 to-white/10 p-5"
+                    >
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           <div
-                            className="flex h-12 w-12 items-center justify-center rounded-2xl"
+                            className="flex h-14 w-14 items-center justify-center rounded-2xl"
                             style={{
                               backgroundColor: `${selectedSubFolder.color}22`,
                               border: `1px solid ${selectedSubFolder.color}55`,
                             }}
                           >
                             <FolderOpen
-                              className="h-6 w-6"
+                              className="h-7 w-7"
                               style={{ color: selectedSubFolder.color }}
                             />
                           </div>
+
                           <div>
-                            <h2 className="text-lg font-semibold">
+                            <h2 className="text-xl font-semibold">
                               {selectedSubFolder.name}
                             </h2>
                             <p className="text-sm text-hero-muted">
                               Criada em {formatDate(selectedSubFolder.createdAt)}
                             </p>
+                            <div className="mt-2 flex flex-wrap gap-2 text-xs text-hero-muted">
+                              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                                {selectedSubFolder.materials.length} materiais
+                              </span>
+                              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                                {chatHistory.length} mensagens
+                              </span>
+                              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                                {flashcards.length} flashcards
+                              </span>
+                            </div>
                           </div>
                         </div>
 
-                        <Button onClick={() => setShowAddMaterial((prev) => !prev)}>
+                        <Button
+                          onClick={() => setShowAddMaterial((prev) => !prev)}
+                          className="bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-md"
+                        >
                           <Plus className="mr-2 h-4 w-4" />
                           Adicionar material
                         </Button>
                       </div>
-                    </div>
+                    </motion.div>
 
                     {showAddMaterial && (
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-4">
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4"
+                      >
                         <h3 className="text-base font-semibold">Novo material</h3>
 
                         <div className="flex gap-2 flex-wrap">
@@ -726,30 +1003,39 @@ const FolderDetail = () => {
                             Cancelar
                           </Button>
                         </div>
-                      </div>
+                      </motion.div>
                     )}
 
                     {selectedSubFolder.materials.length === 0 ? (
-                      <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
-                        <FileText className="mx-auto mb-3 h-10 w-10 text-hero-muted" />
-                        <h3 className="text-lg font-semibold">
+                      <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
+                        <FileText className="mb-4 h-12 w-12 text-hero-muted" />
+                        <h3 className="text-xl font-semibold">
                           Nenhum material nesta subpasta ainda
                         </h3>
-                        <p className="mt-2 text-sm text-hero-muted">
+                        <p className="mt-2 max-w-xl text-sm text-hero-muted">
                           Adicione notas ou links do YouTube para começar a montar o
                           conteúdo desta subpasta.
                         </p>
+                        <Button
+                          className="mt-5 bg-gradient-primary text-primary-foreground hover:opacity-90"
+                          onClick={() => setShowAddMaterial(true)}
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          Adicionar primeiro material
+                        </Button>
                       </div>
                     ) : (
                       <div className="grid gap-4">
                         {selectedSubFolder.materials.map((material) => (
-                          <div
+                          <motion.div
                             key={material.id}
-                            className="rounded-2xl border border-white/10 bg-white/5 p-5"
+                            whileHover={{ scale: 1.01 }}
+                            transition={{ type: "spring", stiffness: 220, damping: 20 }}
+                            className="cursor-pointer rounded-3xl border border-white/10 bg-white/5 p-5 transition-all hover:bg-white/10"
                           >
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex items-start gap-3">
-                                <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+                                <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
                                   {material.type === "note" ? (
                                     <NotebookPen className="h-5 w-5 text-primary" />
                                   ) : (
@@ -770,7 +1056,7 @@ const FolderDetail = () => {
                                   </p>
 
                                   {material.type === "note" && material.content && (
-                                    <p className="mt-3 text-sm text-hero-muted line-clamp-3">
+                                    <p className="mt-3 max-w-3xl text-sm text-hero-muted line-clamp-3">
                                       {material.content}
                                     </p>
                                   )}
@@ -806,7 +1092,7 @@ const FolderDetail = () => {
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
-                          </div>
+                          </motion.div>
                         ))}
                       </div>
                     )}
@@ -817,7 +1103,7 @@ const FolderDetail = () => {
           </TabsContent>
 
           <TabsContent value="chat" className="mt-6">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-5">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 space-y-5">
               <div className="flex items-center gap-3">
                 <MessageSquare className="h-6 w-6 text-primary" />
                 <div>
@@ -829,19 +1115,26 @@ const FolderDetail = () => {
                   <p className="text-sm text-hero-muted">
                     Histórico salvo por contexto. No futuro, a IA responderá com base apenas nos materiais desta área.
                   </p>
+                  <p className="mt-2 text-xs text-hero-muted">
+                    Contexto atual: {selectedSubFolder?.name || folder.name}
+                  </p>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-black/10 p-4 min-h-[220px] space-y-3">
+              <div className="rounded-3xl border border-white/10 bg-black/10 p-4 min-h-[260px] space-y-3">
                 {chatHistory.length === 0 ? (
-                  <div className="text-sm text-hero-muted">
-                    Nenhuma conversa iniciada neste contexto ainda.
+                  <div className="flex min-h-[220px] flex-col items-center justify-center text-center">
+                    <MessageSquare className="mb-3 h-10 w-10 text-hero-muted" />
+                    <p className="font-medium">Nenhuma conversa iniciada ainda</p>
+                    <p className="mt-1 text-sm text-hero-muted">
+                      Envie uma mensagem para começar o chat deste contexto.
+                    </p>
                   </div>
                 ) : (
                   chatHistory.map((message) => (
                     <div
                       key={message.id}
-                      className={`rounded-xl p-3 text-sm ${
+                      className={`rounded-2xl p-3 text-sm ${
                         message.role === "user"
                           ? "bg-white/10 ml-6"
                           : "bg-primary/10 mr-6"
@@ -866,7 +1159,7 @@ const FolderDetail = () => {
                   placeholder="Escreva sua mensagem"
                   className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
                 />
-                <Button onClick={sendChatMessage}>
+                <Button onClick={sendChatMessage} className="bg-gradient-primary text-primary-foreground">
                   <Send className="mr-2 h-4 w-4" />
                   Enviar
                 </Button>
@@ -875,8 +1168,8 @@ const FolderDetail = () => {
           </TabsContent>
 
           <TabsContent value="simulados" className="mt-6 space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="h-5 w-5 text-primary" />
                   <div>
@@ -886,34 +1179,230 @@ const FolderDetail = () => {
                         : `Simulados da pasta: ${folder.name}`}
                     </h3>
                     <p className="text-sm text-hero-muted">
-                      Histórico salvo por contexto. Preparado para IA depois.
+                      Configure o tipo de simulado deste contexto. Quando a IA entrar,
+                      ela usará essas escolhas para gerar as questões.
                     </p>
                   </div>
                 </div>
 
-                <Button onClick={createMockQuiz}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Gerar simulado
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowQuizConfig((prev) => !prev)}
+                  >
+                    <SlidersHorizontal className="mr-2 h-4 w-4" />
+                    Configurar
+                  </Button>
+
+                  <Button
+                    onClick={createMockQuiz}
+                    className="bg-gradient-primary text-primary-foreground"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Gerar simulado
+                  </Button>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-hero-muted">
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  Tipo: {quizTypeLabel(quizConfig.quizType)}
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  Dificuldade: {difficultyLabel(quizConfig.difficulty)}
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  {quizConfig.questionCount} questões
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  {quizConfig.timerEnabled
+                    ? `Cronômetro: ${quizConfig.timerMinutes} min`
+                    : "Sem cronômetro"}
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  {correctionModeLabel(quizConfig.correctionMode)}
+                </span>
               </div>
             </div>
 
+            {showQuizConfig && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-5"
+              >
+                <div>
+                  <h3 className="text-lg font-semibold">Configuração do simulado</h3>
+                  <p className="text-sm text-hero-muted mt-1">
+                    Escolha como esse simulado deve ser montado neste contexto.
+                  </p>
+                </div>
+
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm text-hero-muted">Tipo de simulado</label>
+                    <select
+                      value={quizConfig.quizType}
+                      onChange={(e) =>
+                        setQuizConfig((prev) => ({
+                          ...prev,
+                          quizType: e.target.value as QuizType,
+                        }))
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-primary"
+                    >
+                      <option value="multiple_choice">Múltipla escolha</option>
+                      <option value="open">Abertas</option>
+                      <option value="mixed">Misto</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm text-hero-muted">Dificuldade</label>
+                    <select
+                      value={quizConfig.difficulty}
+                      onChange={(e) =>
+                        setQuizConfig((prev) => ({
+                          ...prev,
+                          difficulty: e.target.value as Difficulty,
+                        }))
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-primary"
+                    >
+                      <option value="easy">Fácil</option>
+                      <option value="medium">Médio</option>
+                      <option value="hard">Difícil</option>
+                      <option value="mixed">Misto</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm text-hero-muted">Número de questões</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={quizConfig.questionCount}
+                      onChange={(e) =>
+                        setQuizConfig((prev) => ({
+                          ...prev,
+                          questionCount: Math.max(1, Number(e.target.value) || 1),
+                        }))
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-primary"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm text-hero-muted">Modo de correção</label>
+                    <select
+                      value={quizConfig.correctionMode}
+                      onChange={(e) =>
+                        setQuizConfig((prev) => ({
+                          ...prev,
+                          correctionMode: e.target.value as CorrectionMode,
+                        }))
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-primary"
+                    >
+                      <option value="instant">Mostrar resposta na hora</option>
+                      <option value="end">Mostrar resposta só no final</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm text-hero-muted flex items-center gap-2">
+                      <Clock3 className="h-4 w-4" />
+                      Cronômetro
+                    </label>
+
+                    <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={quizConfig.timerEnabled}
+                          onChange={(e) =>
+                            setQuizConfig((prev) => ({
+                              ...prev,
+                              timerEnabled: e.target.checked,
+                            }))
+                          }
+                        />
+                        Ativar cronômetro
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {quizConfig.timerEnabled && (
+                  <div className="space-y-2">
+                    <label className="text-sm text-hero-muted">Tempo em minutos</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={300}
+                      value={quizConfig.timerMinutes}
+                      onChange={(e) =>
+                        setQuizConfig((prev) => ({
+                          ...prev,
+                          timerMinutes: Math.max(1, Number(e.target.value) || 1),
+                        }))
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-primary"
+                    />
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <Button onClick={createMockQuiz}>Salvar e gerar simulado</Button>
+                  <Button variant="outline" onClick={() => setShowQuizConfig(false)}>
+                    Fechar
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
             {quizHistory.length > 0 && (
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-4">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4">
                 <h3 className="text-lg font-semibold">Histórico deste contexto</h3>
 
                 <div className="grid gap-3">
                   {quizHistory.map((quiz) => (
                     <div
                       key={quiz.id}
-                      className="rounded-xl border border-white/10 bg-white/5 p-4 flex items-center justify-between gap-4"
+                      className="rounded-2xl border border-white/10 bg-white/5 p-4 flex items-center justify-between gap-4"
                     >
                       <div>
                         <p className="font-medium">{quiz.title}</p>
                         <p className="text-sm text-hero-muted">
-                          {quiz.type} • {quiz.questionCount} questões
+                          {quiz.type} • {quiz.questionCount} questões •{" "}
+                          {difficultyLabel(quiz.difficulty)}
                         </p>
                         <p className="text-xs text-hero-muted mt-1">
+                          {quiz.timerEnabled
+                            ? `Com cronômetro (${quiz.timerMinutes} min)`
+                            : "Sem cronômetro"}
+                        </p>
+                        <p className="text-xs text-hero-muted mt-1">
+                          {correctionModeLabel(quiz.correctionMode)}
+                        </p>
+
+                        <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                          <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-emerald-300">
+                            Acertos: {quiz.correctCount}
+                          </span>
+                          <span className="rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-red-300">
+                            Erros: {quiz.wrongCount}
+                          </span>
+                          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-hero-muted">
+                            % acerto: {quiz.correctPercentage}%
+                          </span>
+                          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-hero-muted">
+                            % erro: {quiz.wrongPercentage}%
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-hero-muted mt-3">
                           {formatDateTime(quiz.createdAt)}
                         </p>
                       </div>
@@ -936,8 +1425,8 @@ const FolderDetail = () => {
           </TabsContent>
 
           <TabsContent value="flashcards" className="mt-6 space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex items-center gap-3">
                   <BookOpenText className="h-5 w-5 text-primary" />
                   <div>
@@ -947,20 +1436,112 @@ const FolderDetail = () => {
                         : `Flashcards da pasta: ${folder.name}`}
                     </h3>
                     <p className="text-sm text-hero-muted">
-                      Histórico salvo por contexto. Preparado para geração por IA depois.
+                      Defina como os cartões devem ser exibidos neste contexto. Depois,
+                      quando a IA entrar, ela poderá gerar os cards nesse formato.
                     </p>
                   </div>
                 </div>
 
-                <Button onClick={() => setShowFlashcardForm((prev) => !prev)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Novo flashcard
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowFlashcardSettings((prev) => !prev)}
+                  >
+                    <SlidersHorizontal className="mr-2 h-4 w-4" />
+                    Configurar
+                  </Button>
+
+                  <Button
+                    onClick={() => setShowFlashcardForm((prev) => !prev)}
+                    className="bg-gradient-primary text-primary-foreground"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Novo flashcard
+                  </Button>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-hero-muted">
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  Modo:{" "}
+                  {flashcardConfig.displayMode === "click-to-flip"
+                    ? "Virar ao clicar"
+                    : "Frente e verso visíveis"}
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  Resposta na{" "}
+                  {flashcardConfig.answerPosition === "back" ? "parte de trás" : "parte da frente"}
+                </span>
               </div>
             </div>
 
+            {showFlashcardSettings && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-5"
+              >
+                <div>
+                  <h3 className="text-lg font-semibold">Configuração dos flashcards</h3>
+                  <p className="text-sm text-hero-muted mt-1">
+                    Escolha como os cartões devem ser exibidos neste contexto.
+                  </p>
+                </div>
+
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm text-hero-muted">Modo de exibição</label>
+                    <select
+                      value={flashcardConfig.displayMode}
+                      onChange={(e) =>
+                        setFlashcardConfig((prev) => ({
+                          ...prev,
+                          displayMode: e.target.value as FlashcardDisplayMode,
+                        }))
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-primary"
+                    >
+                      <option value="click-to-flip">Virar ao clicar</option>
+                      <option value="front-back">Frente e verso visíveis</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm text-hero-muted">Posição da resposta</label>
+                    <select
+                      value={flashcardConfig.answerPosition}
+                      onChange={(e) =>
+                        setFlashcardConfig((prev) => ({
+                          ...prev,
+                          answerPosition: e.target.value as FlashcardAnswerPosition,
+                        }))
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-primary"
+                    >
+                      <option value="back">Resposta atrás</option>
+                      <option value="front">Resposta na frente</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button onClick={() => setShowFlashcardSettings(false)}>
+                    Salvar configuração
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setFlashcardConfig(defaultFlashcardConfig);
+                    }}
+                  >
+                    Restaurar padrão
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
             {showFlashcardForm && (
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-4">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4">
                 <h3 className="text-base font-semibold">Criar flashcard</h3>
 
                 <input
@@ -987,7 +1568,7 @@ const FolderDetail = () => {
             )}
 
             {flashcards.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
+              <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
                 <Layers3 className="mx-auto mb-3 h-10 w-10 text-hero-muted" />
                 <h3 className="text-lg font-semibold">Nenhum flashcard neste contexto</h3>
                 <p className="mt-2 text-sm text-hero-muted">
@@ -997,30 +1578,13 @@ const FolderDetail = () => {
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
                 {flashcards.map((card) => (
-                  <div
-                    key={card.id}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-5"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-hero-muted">
-                            Frente
-                          </p>
-                          <p className="font-medium">{card.front}</p>
-                        </div>
+                  <div key={card.id} className="space-y-3">
+                    <FlashcardPreview card={card} config={flashcardConfig} />
 
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-hero-muted">
-                            Verso
-                          </p>
-                          <p className="text-sm text-hero-muted">{card.back}</p>
-                        </div>
-
-                        <p className="text-xs text-hero-muted">
-                          {formatDateTime(card.createdAt)}
-                        </p>
-                      </div>
+                    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <p className="text-xs text-hero-muted">
+                        {formatDateTime(card.createdAt)}
+                      </p>
 
                       <Button
                         variant="ghost"
