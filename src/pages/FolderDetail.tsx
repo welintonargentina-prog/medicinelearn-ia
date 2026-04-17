@@ -687,6 +687,7 @@ const FolderDetail = () => {
   setFlashcardReviews((prev) =>
     prev.filter((review) => review.flashcardId !== id)
   );
+};
 
   if (!folder) {
     return (
