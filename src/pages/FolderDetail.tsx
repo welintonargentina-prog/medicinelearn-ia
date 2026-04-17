@@ -849,6 +849,66 @@ const FolderDetail = () => {
       {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
     </Button>
   </div>
+
+  <div className="px-2 pb-4 space-y-2">
+    <button
+      onClick={() => setSelectedSubFolderId(null)}
+      className={cn(
+        "w-full rounded-xl text-left transition border",
+        sidebarOpen ? "px-3 py-3" : "px-2 py-3 flex justify-center",
+        selectedSubFolderId === null
+          ? "bg-primary/15 border-primary/30 text-white"
+          : "bg-white/5 border-white/10 text-hero-muted hover:bg-white/10"
+      )}
+    >
+      {sidebarOpen ? (
+        <div className="flex items-center gap-3">
+          <Folder className="h-4 w-4 text-primary" />
+          <span className="truncate">{folder.name}</span>
+        </div>
+      ) : (
+        <Folder className="h-4 w-4 text-primary" />
+      )}
+    </button>
+
+    {subFolders.map((subFolder) => {
+      const isActive = selectedSubFolderId === subFolder.id;
+
+      return (
+        <button
+          key={subFolder.id}
+          onClick={() => setSelectedSubFolderId(subFolder.id)}
+          className={cn(
+            "w-full rounded-xl text-left transition border",
+            sidebarOpen ? "px-3 py-3" : "px-2 py-3 flex justify-center",
+            isActive
+              ? "bg-primary/15 border-primary/30 text-white"
+              : "bg-white/5 border-white/10 text-hero-muted hover:bg-white/10"
+          )}
+        >
+          {sidebarOpen ? (
+            <div className="flex items-center gap-3">
+              <FolderOpen
+                className="h-4 w-4"
+                style={{ color: subFolder.color }}
+              />
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{subFolder.name}</p>
+                <p className="text-xs text-hero-muted">
+                  {subFolder.materials.length} materiais
+                </p>
+              </div>
+            </div>
+          ) : (
+            <FolderOpen
+              className="h-4 w-4"
+              style={{ color: subFolder.color }}
+            />
+          )}
+        </button>
+      );
+    })}
+  </div>
 </div>
      <div className="flex-1">
       <header className="border-b border-white/10 glass">
