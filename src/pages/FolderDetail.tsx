@@ -922,12 +922,23 @@ const FolderDetail = () => {
      <div className="flex-1">
       <header className="border-b border-white/10 glass">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary">
-              <Brain className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-bold">MedLearn AI</span>
-          </Link>
+          <div className="flex items-center gap-2">
+  {/* BOTÃO DE VOLTAR */}
+  <button
+    onClick={() => navigate("/dashboard")}
+    className="p-2 rounded-lg hover:bg-white/10 transition"
+  >
+    <ChevronLeft className="h-5 w-5 text-hero-muted hover:text-white" />
+  </button>
+
+  {/* LOGO */}
+  <Link to="/dashboard" className="flex items-center gap-2">
+    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary">
+      <Brain className="h-5 w-5 text-primary-foreground" />
+    </div>
+    <span className="text-lg font-bold">MedLearn AI</span>
+  </Link>
+</div>
 
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
