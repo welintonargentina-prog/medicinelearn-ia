@@ -1895,7 +1895,7 @@ const FolderDetail = () => {
         </Button>
       </div>
     </div>
-  ))}
+))}
 </div>
           </TabsContent>
         </Tabs>
