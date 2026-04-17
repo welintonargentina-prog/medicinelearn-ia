@@ -1874,8 +1874,6 @@ const FolderDetail = () => {
 
 <TabsContent value="desempenho" className="mt-6 space-y-6">
   <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-
-  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
     <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
       <p className="text-sm text-hero-muted">Revisões de flashcards</p>
       <h3 className="mt-2 text-3xl font-bold">{totalReviews}</h3>
@@ -1941,9 +1939,9 @@ const FolderDetail = () => {
   </div>
 </TabsContent>
 </Tabs>
- </main>
-   </div>
- </div>
+</main>
+</div>
+</div>
 );
 };
 
