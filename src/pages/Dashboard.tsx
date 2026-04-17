@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Brain,
@@ -23,29 +23,36 @@ const Dashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const baseUserName =
+    user?.user_metadata?.display_name ||
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email ||
+    "estudante";
+
+  const [userName, setUserName] = useState(baseUserName);
   const [editing, setEditing] = useState(false);
   const [newName, setNewName] = useState("");
 
-  const userName = useMemo(() => {
-    return (
-      user?.user_metadata?.display_name ||
-      user?.user_metadata?.full_name ||
-      user?.user_metadata?.name ||
-      user?.email ||
-      "estudante"
-    );
-  }, [user]);
-
   const handleSaveName = async () => {
-    if (!newName) return;
+    if (!newName.trim()) return;
 
-    await supabase.auth.updateUser({
+    const cleanedName = newName.trim();
+
+    const { error } = await supabase.auth.updateUser({
       data: {
-        display_name: newName,
+        display_name: cleanedName,
       },
     });
 
-    window.location.reload(); // atualiza para mostrar novo nome
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setUserName(cleanedName);
+    setEditing(false);
+    setNewName("");
   };
 
   const cards = [
@@ -81,6 +88,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-hero text-hero-foreground">
+      {/* HEADER */}
       <header className="border-b border-white/10 glass">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <Link to="/dashboard" className="flex items-center gap-2">
@@ -108,10 +116,11 @@ const Dashboard = () => {
         </div>
       </header>
 
+      {/* MAIN */}
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 space-y-10">
+        
+        {/* BOAS-VINDAS */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          
-          {/* TÍTULO COM EDITAR */}
           <div className="flex items-center gap-3">
             <h1 className="text-4xl font-bold">
               Bem-vindo, <span className="text-primary">{userName}</span>
@@ -145,6 +154,7 @@ const Dashboard = () => {
           </p>
         </motion.div>
 
+        {/* CONTINUAR ESTUDO */}
         <motion.section
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -182,6 +192,7 @@ const Dashboard = () => {
           </div>
         </motion.section>
 
+        {/* CARDS */}
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {cards.map((card, index) => {
             const Icon = card.icon;
@@ -214,6 +225,7 @@ const Dashboard = () => {
             );
           })}
         </section>
+
       </main>
     </div>
   );
