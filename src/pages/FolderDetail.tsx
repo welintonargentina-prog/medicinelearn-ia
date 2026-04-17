@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimuladosTab } from "@/components/simulados/SimuladosTab";
 import { PerformancePanel } from "@/components/simulados/PerformancePanel";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Brain,
   LogOut,
@@ -24,6 +25,7 @@ import {
   BookOpenText,
   Sparkles,
   ChevronRight,
+  ChevronLeft,
   Clock3,
   SlidersHorizontal,
   RotateCcw,
@@ -830,7 +832,24 @@ const FolderDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-hero text-hero-foreground">
+   <div className="flex min-h-screen bg-hero text-hero-foreground">
+     <div
+  className={cn(
+    "transition-all duration-300 border-r border-white/10 bg-white/5 backdrop-blur-md",
+    sidebarOpen ? "w-64" : "w-16"
+  )}
+>
+  <div className="flex justify-end p-2">
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setSidebarOpen(!sidebarOpen)}
+    >
+      {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
+    </Button>
+  </div>
+</div>
+     <div className="flex-1">
       <header className="border-b border-white/10 glass">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <Link to="/dashboard" className="flex items-center gap-2">
@@ -1759,9 +1778,9 @@ const FolderDetail = () => {
             {performance && <PerformancePanel performance={performance} />}
           </TabsContent>
         </Tabs>
-      </main>
-    </div>
-  );
-};
+     </main>
+</div>   
+</div>   
+);
 
 export default FolderDetail;
