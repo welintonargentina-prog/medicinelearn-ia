@@ -352,7 +352,7 @@ const Folders = () => {
                       <>
                         <h3 className="mt-4 text-lg font-semibold">{folder.name}</h3>
                         <p className="mt-1 text-sm leading-relaxed text-hero-muted">
-                          {folder.description === "Pasta criada para organizar seus materiais."
+                          {folder.description === "Pasta criada para organizar seus materiais"
   ? t("folders.defaultDescription")
   : folder.description}
                         </p>
