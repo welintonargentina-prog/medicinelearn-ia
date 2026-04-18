@@ -180,137 +180,461 @@ const translations: Translations = {
     en: "Continue your studies with focus.",
     es: "Continúa tus estudios con enfoque.",
   },
-
   "dash.myMaterials": {
     pt: "Meus Materiais",
     en: "My Materials",
     es: "Mis Materiales",
   },
-
   "dash.materialsDescription": {
     pt: "Organize seus estudos, crie subpastas, adicione materiais e use IA para aprender de forma inteligente.",
     en: "Organize your studies, create subfolders, add materials and use AI to learn intelligently.",
     es: "Organiza tus estudios, crea subcarpetas, agrega materiales y usa IA para aprender de forma inteligente.",
   },
-
   "dash.enterSystem": {
     pt: "Entrar no sistema",
     en: "Enter the system",
     es: "Entrar al sistema",
   },
-
-  "common.logout": {
-    pt: "Sair",
-    en: "Log out",
-    es: "Salir",
-  },
-
-  "common.save": {
-    pt: "Salvar",
-    en: "Save",
-    es: "Guardar",
-  },
-
   "dash.newName": {
     pt: "Novo nome",
     en: "New name",
     es: "Nuevo nombre",
   },
-
   "dash.continueStudying": {
     pt: "Continuar estudando",
     en: "Continue studying",
     es: "Continuar estudiando",
   },
-
   "dash.lastAccess": {
     pt: "Último acesso há 2 horas",
     en: "Last accessed 2 hours ago",
     es: "Último acceso hace 2 horas",
   },
 
+  // Common
+  "common.logout": {
+    pt: "Sair",
+    en: "Log out",
+    es: "Salir",
+  },
+  "common.save": {
+    pt: "Salvar",
+    en: "Save",
+    es: "Guardar",
+  },
+  "common.cancel": {
+    pt: "Cancelar",
+    en: "Cancel",
+    es: "Cancelar",
+  },
   "common.continue": {
     pt: "Continuar",
     en: "Continue",
     es: "Continuar",
   },
-// Folders
-"folders.title": {
-  pt: "Minhas Pastas",
-  en: "My Folders",
-  es: "Mis carpetas",
-},
-"folders.subtitle": {
-  pt: "Organize seus materiais por tema, disciplina ou assunto.",
-  en: "Organize your materials by topic or subject.",
-  es: "Organiza tus materiales por tema o materia.",
-},
-"folders.new": {
-  pt: "Nova pasta",
-  en: "New folder",
-  es: "Nueva carpeta",
-},
-"folders.createTitle": {
-  pt: "Criar pasta",
-  en: "Create folder",
-  es: "Crear carpeta",
-},
-"folders.name": {
-  pt: "Nome da pasta",
-  en: "Folder name",
-  es: "Nombre de la carpeta",
-},
-"folders.description": {
-  pt: "Descrição da pasta",
-  en: "Folder description",
-  es: "Descripción de la carpeta",
-},
-"folders.chooseColor": {
-  pt: "Escolha uma cor",
-  en: "Choose a color",
-  es: "Elige un color",
-},
-"folders.save": {
-  pt: "Salvar pasta",
-  en: "Save folder",
-  es: "Guardar carpeta",
-},
-"folders.open": {
-  pt: "Abrir pasta",
-  en: "Open folder",
-  es: "Abrir carpeta",
-},
-"folders.emptyTitle": {
-  pt: "Você ainda não criou nenhuma pasta",
-  en: "You haven't created any folders yet",
-  es: "Aún no has creado ninguna carpeta",
-},
-"folders.emptyDescription": {
-  pt: "Crie sua primeira pasta para começar a organizar seus materiais.",
-  en: "Create your first folder to start organizing your materials.",
-  es: "Crea tu primera carpeta para empezar a organizar tus materiales.",
-},
-"folders.createFirst": {
-  pt: "Criar primeira pasta",
-  en: "Create first folder",
-  es: "Crear primera carpeta",
-},
-"folders.materials": {
-  pt: "materiais",
-  en: "materials",
-  es: "materiales",
-},
-"folders.color": {
-  pt: "Cor da pasta",
-  en: "Folder color",
-  es: "Color de la carpeta",
-},
-"folders.defaultDescription": {
-  pt: "Pasta criada para organizar seus materiais",
-  en: "Folder created to organize your materials",
-  es: "Carpeta creada para organizar tus materiales",
-},
-  };
+  "common.back": {
+    pt: "Voltar",
+    en: "Back",
+    es: "Volver",
+  },
+
+  // Folders
+  "folders.title": {
+    pt: "Minhas Pastas",
+    en: "My Folders",
+    es: "Mis carpetas",
+  },
+  "folders.subtitle": {
+    pt: "Organize seus materiais por tema, disciplina ou assunto.",
+    en: "Organize your materials by topic or subject.",
+    es: "Organiza tus materiales por tema o materia.",
+  },
+  "folders.new": {
+    pt: "Nova pasta",
+    en: "New folder",
+    es: "Nueva carpeta",
+  },
+  "folders.createTitle": {
+    pt: "Criar pasta",
+    en: "Create folder",
+    es: "Crear carpeta",
+  },
+  "folders.name": {
+    pt: "Nome da pasta",
+    en: "Folder name",
+    es: "Nombre de la carpeta",
+  },
+  "folders.description": {
+    pt: "Descrição da pasta",
+    en: "Folder description",
+    es: "Descripción de la carpeta",
+  },
+  "folders.chooseColor": {
+    pt: "Escolha uma cor",
+    en: "Choose a color",
+    es: "Elige un color",
+  },
+  "folders.save": {
+    pt: "Salvar pasta",
+    en: "Save folder",
+    es: "Guardar carpeta",
+  },
+  "folders.open": {
+    pt: "Abrir pasta",
+    en: "Open folder",
+    es: "Abrir carpeta",
+  },
+  "folders.emptyTitle": {
+    pt: "Você ainda não criou nenhuma pasta",
+    en: "You haven't created any folders yet",
+    es: "Aún no has creado ninguna carpeta",
+  },
+  "folders.emptyDescription": {
+    pt: "Crie sua primeira pasta para começar a organizar seus materiais.",
+    en: "Create your first folder to start organizing your materials.",
+    es: "Crea tu primera carpeta para empezar a organizar tus materiales.",
+  },
+  "folders.createFirst": {
+    pt: "Criar primeira pasta",
+    en: "Create first folder",
+    es: "Crear primera carpeta",
+  },
+  "folders.materials": {
+    pt: "materiais",
+    en: "materials",
+    es: "materiales",
+  },
+  "folders.color": {
+    pt: "Cor da pasta",
+    en: "Folder color",
+    es: "Color de la carpeta",
+  },
+  "folders.defaultDescription": {
+    pt: "Pasta criada para organizar seus materiais",
+    en: "Folder created to organize your materials",
+    es: "Carpeta creada para organizar tus materiales",
+  },
+
+  // Tabs
+  "tabs.materials": {
+    pt: "Materiais",
+    en: "Materials",
+    es: "Materiales",
+  },
+  "tabs.chat": {
+    pt: "Chat",
+    en: "Chat",
+    es: "Chat",
+  },
+  "tabs.simulados": {
+    pt: "Simulados",
+    en: "Mock Exams",
+    es: "Simulacros",
+  },
+  "tabs.flashcards": {
+    pt: "Flashcards",
+    en: "Flashcards",
+    es: "Flashcards",
+  },
+  "tabs.performance": {
+    pt: "Desempenho",
+    en: "Performance",
+    es: "Rendimiento",
+  },
+
+  // Folder detail
+  "folder.studyArea": {
+    pt: "Área de estudo",
+    en: "Study area",
+    es: "Área de estudio",
+  },
+  "folder.noDescription": {
+    pt: "Sem descrição",
+    en: "No description",
+    es: "Sin descripción",
+  },
+  "folder.notFound": {
+    pt: "Pasta não encontrada",
+    en: "Folder not found",
+    es: "Carpeta no encontrada",
+  },
+
+  // Subfolders
+  "subfolders.single": {
+    pt: "Subpasta",
+    en: "Subfolder",
+    es: "Subcarpeta",
+  },
+  "subfolders.title": {
+    pt: "Subpastas",
+    en: "Subfolders",
+    es: "Subcarpetas",
+  },
+  "subfolders.description": {
+    pt: "Organize conteúdos por assunto.",
+    en: "Organize content by topic.",
+    es: "Organiza contenidos por tema.",
+  },
+  "subfolders.name": {
+    pt: "Nome da subpasta",
+    en: "Subfolder name",
+    es: "Nombre de la subcarpeta",
+  },
+  "subfolders.empty": {
+    pt: "Nenhuma subpasta criada ainda",
+    en: "No subfolders created yet",
+    es: "Aún no se ha creado ninguna subcarpeta",
+  },
+  "subfolders.emptyDescription": {
+    pt: "Crie uma subpasta para separar assuntos.",
+    en: "Create a subfolder to separate topics.",
+    es: "Crea una subcarpeta para separar temas.",
+  },
+  "subfolders.noneSelected": {
+    pt: "Nenhuma subpasta selecionada",
+    en: "No subfolder selected",
+    es: "Ninguna subcarpeta seleccionada",
+  },
+  "subfolders.noneSelectedDescription": {
+    pt: "Selecione uma subpasta para ver os materiais dela, ou continue usando os materiais da pasta principal.",
+    en: "Select a subfolder to view its materials, or continue using the main folder materials.",
+    es: "Selecciona una subcarpeta para ver sus materiales, o sigue usando los materiales de la carpeta principal.",
+  },
+  "subfolders.create": {
+    pt: "Criar subpasta",
+    en: "Create subfolder",
+    es: "Crear subcarpeta",
+  },
+
+  // Materials
+  "materials.new": {
+    pt: "Novo material",
+    en: "New material",
+    es: "Nuevo material",
+  },
+  "materials.textNote": {
+    pt: "Nota de texto",
+    en: "Text note",
+    es: "Nota de texto",
+  },
+  "materials.youtubeLink": {
+    pt: "Link do YouTube",
+    en: "YouTube link",
+    es: "Enlace de YouTube",
+  },
+  "materials.title": {
+    pt: "Título do material",
+    en: "Material title",
+    es: "Título del material",
+  },
+  "materials.notePlaceholder": {
+    pt: "Escreva a nota ou cole o conteúdo aqui",
+    en: "Write the note or paste the content here",
+    es: "Escribe la nota o pega el contenido aquí",
+  },
+  "materials.youtubePlaceholder": {
+    pt: "Cole a URL do vídeo do YouTube",
+    en: "Paste the YouTube video URL",
+    es: "Pega la URL del video de YouTube",
+  },
+  "materials.save": {
+    pt: "Salvar material",
+    en: "Save material",
+    es: "Guardar material",
+  },
+  "materials.addFirst": {
+    pt: "Adicionar primeiro material",
+    en: "Add first material",
+    es: "Agregar primer material",
+  },
+  "materials.note": {
+    pt: "Nota",
+    en: "Note",
+    es: "Nota",
+  },
+  "materials.openVideo": {
+    pt: "Abrir vídeo",
+    en: "Open video",
+    es: "Abrir video",
+  },
+  "materials.source": {
+    pt: "Fonte",
+    en: "Source",
+    es: "Fuente",
+  },
+  "materials.savedContext": {
+    pt: "Contexto salvo",
+    en: "Saved context",
+    es: "Contexto guardado",
+  },
+  "materials.folderTitle": {
+    pt: "Materiais da pasta",
+    en: "Folder materials",
+    es: "Materiales de la carpeta",
+  },
+  "materials.folderDescription": {
+    pt: "Adicione materiais diretamente nesta pasta, sem precisar criar subpasta.",
+    en: "Add materials directly to this folder without creating a subfolder.",
+    es: "Agrega materiales directamente en esta carpeta, sin necesidad de crear una subcarpeta.",
+  },
+  "materials.addInFolder": {
+    pt: "Adicionar material na pasta",
+    en: "Add material to folder",
+    es: "Agregar material a la carpeta",
+  },
+  "materials.newInFolder": {
+    pt: "Novo material da pasta",
+    en: "New folder material",
+    es: "Nuevo material de la carpeta",
+  },
+  "materials.emptyFolder": {
+    pt: "Nenhum material diretamente nesta pasta ainda",
+    en: "No material directly in this folder yet",
+    es: "Aún no hay material directamente en esta carpeta",
+  },
+  "materials.emptyFolderDescription": {
+    pt: "Adicione notas ou links do YouTube diretamente na pasta principal.",
+    en: "Add notes or YouTube links directly to the main folder.",
+    es: "Agrega notas o enlaces de YouTube directamente en la carpeta principal.",
+  },
+  "materials.addInSubfolder": {
+    pt: "Adicionar material na subpasta",
+    en: "Add material to subfolder",
+    es: "Agregar material a la subcarpeta",
+  },
+  "materials.newInSubfolder": {
+    pt: "Novo material da subpasta",
+    en: "New subfolder material",
+    es: "Nuevo material de la subcarpeta",
+  },
+  "materials.emptySubfolder": {
+    pt: "Nenhum material nesta subpasta ainda",
+    en: "No material in this subfolder yet",
+    es: "Aún no hay material en esta subcarpeta",
+  },
+  "materials.emptySubfolderDescription": {
+    pt: "Adicione notas ou links do YouTube para montar o conteúdo desta subpasta.",
+    en: "Add notes or YouTube links to build this subfolder content.",
+    es: "Agrega notas o enlaces de YouTube para construir el contenido de esta subcarpeta.",
+  },
+
+  // Chat
+  "chat.subfolderTitle": {
+    pt: "Chat da subpasta",
+    en: "Subfolder chat",
+    es: "Chat de la subcarpeta",
+  },
+  "chat.folderTitle": {
+    pt: "Chat da pasta",
+    en: "Folder chat",
+    es: "Chat de la carpeta",
+  },
+  "chat.description": {
+    pt: "Histórico salvo por contexto.",
+    en: "History saved by context.",
+    es: "Historial guardado por contexto.",
+  },
+  "chat.currentContext": {
+    pt: "Contexto atual",
+    en: "Current context",
+    es: "Contexto actual",
+  },
+  "chat.emptyTitle": {
+    pt: "Nenhuma conversa iniciada ainda",
+    en: "No conversation started yet",
+    es: "Aún no se ha iniciado ninguna conversación",
+  },
+  "chat.emptyDescription": {
+    pt: "Envie uma mensagem para começar o chat deste contexto.",
+    en: "Send a message to start this context chat.",
+    es: "Envía un mensaje para comenzar el chat de este contexto.",
+  },
+  "chat.placeholder": {
+    pt: "Escreva sua mensagem",
+    en: "Write your message",
+    es: "Escribe tu mensaje",
+  },
+  "chat.send": {
+    pt: "Enviar",
+    en: "Send",
+    es: "Enviar",
+  },
+  "chat.you": {
+    pt: "Você",
+    en: "You",
+    es: "Tú",
+  },
+  "chat.ai": {
+    pt: "IA",
+    en: "AI",
+    es: "IA",
+  },
+  "chat.messages": {
+    pt: "mensagens",
+    en: "messages",
+    es: "mensajes",
+  },
+
+  // Flashcards
+  "flashcards.emptyTitle": {
+    pt: "Nenhum flashcard neste contexto",
+    en: "No flashcards in this context",
+    es: "No hay flashcards en este contexto",
+  },
+  "flashcards.emptyDescription": {
+    pt: "Crie flashcards para esta pasta ou subpasta.",
+    en: "Create flashcards for this folder or subfolder.",
+    es: "Crea flashcards para esta carpeta o subcarpeta.",
+  },
+  "flashcards.correct": {
+    pt: "Acertei",
+    en: "Got it right",
+    es: "Acerté",
+  },
+  "flashcards.wrong": {
+    pt: "Errei",
+    en: "Got it wrong",
+    es: "Fallé",
+  },
+
+  // Performance
+  "performance.reviews": {
+    pt: "Revisões de flashcards",
+    en: "Flashcard reviews",
+    es: "Revisiones de flashcards",
+  },
+  "performance.correct": {
+    pt: "Acertos",
+    en: "Correct",
+    es: "Aciertos",
+  },
+  "performance.wrong": {
+    pt: "Erros",
+    en: "Wrong",
+    es: "Errores",
+  },
+  "performance.correctRate": {
+    pt: "Taxa de acerto",
+    en: "Correct rate",
+    es: "Tasa de acierto",
+  },
+  "performance.wrongRate": {
+    pt: "Taxa de erro",
+    en: "Wrong rate",
+    es: "Tasa de error",
+  },
+  "performance.flashcardsTitle": {
+    pt: "Desempenho dos flashcards",
+    en: "Flashcard performance",
+    es: "Rendimiento de flashcards",
+  },
+  "performance.empty": {
+    pt: "Ainda não há revisões de flashcards neste contexto.",
+    en: "There are no flashcard reviews in this context yet.",
+    es: "Aún no hay revisiones de flashcards en este contexto.",
+  },
+};
+
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
