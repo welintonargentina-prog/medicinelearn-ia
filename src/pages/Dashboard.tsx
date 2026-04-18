@@ -13,11 +13,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/lib/supabase";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const baseUserName =
     user?.user_metadata?.display_name ||
@@ -88,8 +90,8 @@ const Dashboard = () => {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="flex items-center gap-3">
             <h1 className="text-4xl font-bold">
-              Bem-vindo, <span className="text-primary">{userName}</span>
-            </h1>
+  {t("dash.welcome")}, <span className="text-primary">{userName}</span>
+</h1>
 
             <button
               onClick={() => setEditing(!editing)}
