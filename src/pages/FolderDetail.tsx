@@ -1053,7 +1053,7 @@ const formatDateTime = (date: string) =>
   )}
 >
   <div className="flex justify-end p-2">
-    <Button
+    </Button>
       variant="ghost"
       size="icon"
       onClick={() => setSidebarOpen(!sidebarOpen)}
