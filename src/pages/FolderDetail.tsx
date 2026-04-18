@@ -987,11 +987,15 @@ const formatDateTime = (date: string) =>
 
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-semibold">{material.title}</h3>
-                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-hero-muted">
-                      {material.type === "note" ? t("materials.note") : "YouTube"}
-                    </span>
-                  </div>
+                    <h3 className="font-semibold">
+  {selectedSubFolder
+    ? `${sectionText.quizTitleSubfolder}: ${selectedSubFolder.name}`
+    : `${sectionText.quizTitleFolder}: ${folder.name}`}
+</h3>
+
+<p className="text-sm text-hero-muted">
+  {sectionText.quizDescription}
+</p>
 
                   <p className="mt-1 text-xs text-hero-muted">
                     {t("common.createdAt")} {formatDate(material.createdAt)}
@@ -1643,10 +1647,10 @@ const formatDateTime = (date: string) =>
                 className="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-5"
               >
                 <div>
-                  <h3 className="text-lg font-semibold">Configuração do simulado</h3>
-                  <p className="text-sm text-hero-muted mt-1">
-                    Escolha como esse simulado deve ser montado neste contexto.
-                  </p>
+                  <h3 className="text-lg font-semibold">{sectionText.quizConfigTitle}</h3>
+<p className="text-sm text-hero-muted mt-1">
+  {sectionText.quizConfigDescription}
+</p>
                 </div>
 
                 <div className="grid gap-5 md:grid-cols-2">
