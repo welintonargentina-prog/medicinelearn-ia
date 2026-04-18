@@ -234,8 +234,83 @@ const translations: Translations = {
     en: "Continue",
     es: "Continuar",
   },
-};
-
+// Folders
+"folders.title": {
+  pt: "Minhas Pastas",
+  en: "My Folders",
+  es: "Mis carpetas",
+},
+"folders.subtitle": {
+  pt: "Organize seus materiais por tema, disciplina ou assunto.",
+  en: "Organize your materials by topic or subject.",
+  es: "Organiza tus materiales por tema o materia.",
+},
+"folders.new": {
+  pt: "Nova pasta",
+  en: "New folder",
+  es: "Nueva carpeta",
+},
+"folders.createTitle": {
+  pt: "Criar pasta",
+  en: "Create folder",
+  es: "Crear carpeta",
+},
+"folders.name": {
+  pt: "Nome da pasta",
+  en: "Folder name",
+  es: "Nombre de la carpeta",
+},
+"folders.description": {
+  pt: "Descrição da pasta",
+  en: "Folder description",
+  es: "Descripción de la carpeta",
+},
+"folders.chooseColor": {
+  pt: "Escolha uma cor",
+  en: "Choose a color",
+  es: "Elige un color",
+},
+"folders.save": {
+  pt: "Salvar pasta",
+  en: "Save folder",
+  es: "Guardar carpeta",
+},
+"folders.open": {
+  pt: "Abrir pasta",
+  en: "Open folder",
+  es: "Abrir carpeta",
+},
+"folders.emptyTitle": {
+  pt: "Você ainda não criou nenhuma pasta",
+  en: "You haven't created any folders yet",
+  es: "Aún no has creado ninguna carpeta",
+},
+"folders.emptyDescription": {
+  pt: "Crie sua primeira pasta para começar a organizar seus materiais.",
+  en: "Create your first folder to start organizing your materials.",
+  es: "Crea tu primera carpeta para empezar a organizar tus materiales.",
+},
+"folders.createFirst": {
+  pt: "Criar primeira pasta",
+  en: "Create first folder",
+  es: "Crear primera carpeta",
+},
+"folders.materials": {
+  pt: "materiais",
+  en: "materials",
+  es: "materiales",
+},
+"folders.color": {
+  pt: "Cor da pasta",
+  en: "Folder color",
+  es: "Color de la carpeta",
+},
+"folders.defaultDescription": {
+  pt: "Pasta criada para organizar seus materiais",
+  en: "Folder created to organize your materials",
+  es: "Carpeta creada para organizar tus materiales",
+},
+  };
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
