@@ -498,7 +498,7 @@ const FolderDetail = () => {
     totalReviews > 0 ? Math.round((wrongReviews / totalReviews) * 100) : 0;
 
  const createSubFolder = () => {
-  if (!newSubFolderName.trim()) return;
+  if (!newSubFolderName.trim() || !folderId) return;
 
   const newFolder: SubFolder = {
     id: crypto.randomUUID(),
@@ -1153,9 +1153,9 @@ const FolderDetail = () => {
                       </div>
 
                       <div className="flex gap-2">
-                        <Button size="sm" onClick={createSubFolder}>
-                          Salvar
-                        </Button>
+                        <Button type="button" size="sm" onClick={createSubFolder}>
+  Salvar
+</Button>
                         <Button
                           size="sm"
                           variant="outline"
