@@ -31,7 +31,7 @@ import {
   Folder,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
@@ -162,21 +162,11 @@ const defaultFlashcardConfig: FlashcardConfig = {
   answerPosition: "back",
 };
 
-const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-
-const formatDateTime = (date: string) =>
-  new Date(date).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+const getLocale = (language: string) => {
+  if (language === "en") return "en-US";
+  if (language === "es") return "es-ES";
+  return "pt-BR";
+};
 
 const createEmptyContext = (): StudyContextData => ({
   chatHistory: [],
@@ -310,6 +300,22 @@ const FolderDetail = () => {
 }>();
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
+  const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString(getLocale(language), {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+const formatDateTime = (date: string) =>
+  new Date(date).toLocaleString(getLocale(language), {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const [storedFolders, setStoredFolders] = useState<FolderItem[]>([]);
   const SUBFOLDERS_STORAGE_KEY = `folder_${folderId}_subfolders`;
@@ -978,7 +984,7 @@ const FolderDetail = () => {
               className="text-hero-muted hover:text-hero-foreground hover:bg-white/10"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Sair</span>
+              <span className="hidden sm:inline">{t("common.logout")}</span>
             </Button>
           </div>
         </div>
@@ -1036,13 +1042,13 @@ const FolderDetail = () => {
         <Tabs defaultValue="materiais" className="w-full">
           <TabsList className="h-auto w-full flex-wrap justify-start gap-2 rounded-2xl border border-white/10 bg-white/5 p-2">
             <TabsTrigger value="materiais" className={tabTriggerClass}>
-              <FileText className="mr-1.5 h-3.5 w-3.5" /> Materiais
-            </TabsTrigger>
+  <FileText className="mr-1.5 h-3.5 w-3.5" /> {t("tabs.materials")}
+</TabsTrigger>
             <TabsTrigger value="chat" className={tabTriggerClass}>
-              <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Chat
+              <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> {t("tabs.chat")}
             </TabsTrigger>
             <TabsTrigger value="simulados" className={tabTriggerClass}>
-              <Target className="mr-1.5 h-3.5 w-3.5" /> Simulados
+              <Target className="mr-1.5 h-3.5 w-3.5" /> {t("tabs.simulados")}
             </TabsTrigger>
             <TabsTrigger value="flashcards" className={tabTriggerClass}>
               <Layers3 className="mr-1.5 h-3.5 w-3.5" /> Flashcards
