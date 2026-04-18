@@ -301,6 +301,173 @@ const FolderDetail = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
+  const sectionText = {
+  pt: {
+    quizTitleFolder: "Simulados da pasta",
+    quizTitleSubfolder: "Simulados da subpasta",
+    quizDescription:
+      "Configure o tipo de simulado deste contexto. Quando a IA entrar, ela usará essas escolhas para gerar as questões.",
+    configure: "Configurar",
+    generateQuiz: "Gerar simulado",
+    quizConfigTitle: "Configuração do simulado",
+    quizConfigDescription:
+      "Escolha como esse simulado deve ser montado neste contexto.",
+    quizType: "Tipo de simulado",
+    difficulty: "Dificuldade",
+    questionCount: "Número de questões",
+    correctionMode: "Modo de correção",
+    timer: "Cronômetro",
+    enableTimer: "Ativar cronômetro",
+    timeMinutes: "Tempo em minutos",
+    saveAndGenerate: "Salvar e gerar simulado",
+    close: "Fechar",
+    history: "Histórico deste contexto",
+    correct: "Acertos",
+    wrong: "Erros",
+    correctRate: "Taxa de acerto",
+    wrongRate: "Taxa de erro",
+    noTimer: "Sem cronômetro",
+
+    flashTitleFolder: "Flashcards da pasta",
+    flashTitleSubfolder: "Flashcards da subpasta",
+    flashDescription:
+      "Defina como os cartões devem ser exibidos neste contexto. Depois, quando a IA entrar, ela poderá gerar os cards nesse formato.",
+    newFlashcard: "Novo flashcard",
+    flashConfigTitle: "Configuração dos flashcards",
+    flashConfigDescription:
+      "Escolha como os cartões devem ser exibidos neste contexto.",
+    displayMode: "Modo de exibição",
+    answerPosition: "Posição da resposta",
+    clickToFlip: "Virar ao clicar",
+    frontBackVisible: "Frente e verso visíveis",
+    answerBack: "Resposta atrás",
+    answerFront: "Resposta na frente",
+    saveConfig: "Salvar configuração",
+    restoreDefault: "Restaurar padrão",
+    createFlashcard: "Criar flashcard",
+    frontCard: "Frente do card",
+    backCard: "Verso do card",
+    saveFlashcard: "Salvar flashcard",
+    noFlashcards: "Nenhum flashcard neste contexto",
+    noFlashcardsDesc: "Crie flashcards para esta pasta ou subpasta.",
+    gotItRight: "Acertei",
+    gotItWrong: "Errei",
+
+    performanceTitle: "Desempenho dos flashcards",
+    reviews: "Revisões de flashcards",
+    noReviews: "Ainda não há revisões de flashcards neste contexto.",
+  },
+  es: {
+    quizTitleFolder: "Simulacros de la carpeta",
+    quizTitleSubfolder: "Simulacros de la subcarpeta",
+    quizDescription:
+      "Configura el tipo de simulacro de este contexto. Cuando la IA entre, usará estas elecciones para generar las preguntas.",
+    configure: "Configurar",
+    generateQuiz: "Generar simulacro",
+    quizConfigTitle: "Configuración del simulacro",
+    quizConfigDescription:
+      "Elige cómo debe armarse este simulacro en este contexto.",
+    quizType: "Tipo de simulacro",
+    difficulty: "Dificultad",
+    questionCount: "Número de preguntas",
+    correctionMode: "Modo de corrección",
+    timer: "Cronómetro",
+    enableTimer: "Activar cronómetro",
+    timeMinutes: "Tiempo en minutos",
+    saveAndGenerate: "Guardar y generar simulacro",
+    close: "Cerrar",
+    history: "Historial de este contexto",
+    correct: "Aciertos",
+    wrong: "Errores",
+    correctRate: "Tasa de acierto",
+    wrongRate: "Tasa de error",
+    noTimer: "Sin cronómetro",
+
+    flashTitleFolder: "Flashcards de la carpeta",
+    flashTitleSubfolder: "Flashcards de la subcarpeta",
+    flashDescription:
+      "Define cómo deben mostrarse las tarjetas en este contexto. Después, cuando entre la IA, podrá generar los cards en este formato.",
+    newFlashcard: "Nuevo flashcard",
+    flashConfigTitle: "Configuración de flashcards",
+    flashConfigDescription:
+      "Elige cómo deben mostrarse las tarjetas en este contexto.",
+    displayMode: "Modo de visualización",
+    answerPosition: "Posición de la respuesta",
+    clickToFlip: "Girar al hacer clic",
+    frontBackVisible: "Frente y reverso visibles",
+    answerBack: "Respuesta atrás",
+    answerFront: "Respuesta al frente",
+    saveConfig: "Guardar configuración",
+    restoreDefault: "Restaurar predeterminado",
+    createFlashcard: "Crear flashcard",
+    frontCard: "Frente de la tarjeta",
+    backCard: "Reverso de la tarjeta",
+    saveFlashcard: "Guardar flashcard",
+    noFlashcards: "No hay flashcards en este contexto",
+    noFlashcardsDesc: "Crea flashcards para esta carpeta o subcarpeta.",
+    gotItRight: "Acerté",
+    gotItWrong: "Fallé",
+
+    performanceTitle: "Rendimiento de flashcards",
+    reviews: "Revisiones de flashcards",
+    noReviews: "Aún no hay revisiones de flashcards en este contexto.",
+  },
+  en: {
+    quizTitleFolder: "Folder mock exams",
+    quizTitleSubfolder: "Subfolder mock exams",
+    quizDescription:
+      "Configure the mock exam type for this context. When the AI is enabled, it will use these choices to generate questions.",
+    configure: "Configure",
+    generateQuiz: "Generate mock exam",
+    quizConfigTitle: "Mock exam settings",
+    quizConfigDescription:
+      "Choose how this mock exam should be built for this context.",
+    quizType: "Mock exam type",
+    difficulty: "Difficulty",
+    questionCount: "Number of questions",
+    correctionMode: "Correction mode",
+    timer: "Timer",
+    enableTimer: "Enable timer",
+    timeMinutes: "Time in minutes",
+    saveAndGenerate: "Save and generate mock exam",
+    close: "Close",
+    history: "History for this context",
+    correct: "Correct",
+    wrong: "Wrong",
+    correctRate: "Correct rate",
+    wrongRate: "Wrong rate",
+    noTimer: "No timer",
+
+    flashTitleFolder: "Folder flashcards",
+    flashTitleSubfolder: "Subfolder flashcards",
+    flashDescription:
+      "Define how cards should be displayed in this context. Later, when the AI is enabled, it can generate cards in this format.",
+    newFlashcard: "New flashcard",
+    flashConfigTitle: "Flashcard settings",
+    flashConfigDescription:
+      "Choose how cards should be displayed in this context.",
+    displayMode: "Display mode",
+    answerPosition: "Answer position",
+    clickToFlip: "Flip on click",
+    frontBackVisible: "Front and back visible",
+    answerBack: "Answer on back",
+    answerFront: "Answer on front",
+    saveConfig: "Save settings",
+    restoreDefault: "Restore default",
+    createFlashcard: "Create flashcard",
+    frontCard: "Card front",
+    backCard: "Card back",
+    saveFlashcard: "Save flashcard",
+    noFlashcards: "No flashcards in this context",
+    noFlashcardsDesc: "Create flashcards for this folder or subfolder.",
+    gotItRight: "Got it right",
+    gotItWrong: "Got it wrong",
+
+    performanceTitle: "Flashcard performance",
+    reviews: "Flashcard reviews",
+    noReviews: "There are no flashcard reviews in this context yet.",
+  },
+}[language];
   const formatDate = (date: string) =>
   new Date(date).toLocaleDateString(getLocale(language), {
     day: "2-digit",
@@ -1435,7 +1602,7 @@ const formatDateTime = (date: string) =>
                     className="border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10 hover:text-hero-foreground"
                   >
                     <SlidersHorizontal className="mr-2 h-4 w-4" />
-                    Configurar
+                   {sectionText.configure}
                   </Button>
 
                   <Button
@@ -1443,7 +1610,7 @@ const formatDateTime = (date: string) =>
                     className="bg-gradient-primary text-primary-foreground"
                   >
                     <Plus className="mr-2 h-4 w-4" />
-                    Gerar simulado
+                   {sectionText.generateQuiz}
                   </Button>
                 </div>
               </div>
@@ -1818,7 +1985,7 @@ const formatDateTime = (date: string) =>
         {flashcards.length === 0 ? (
   <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
     <Layers3 className="mx-auto mb-3 h-10 w-10 text-hero-muted" />
-    <h3 className="text-lg font-semibold">Nenhum flashcard neste contexto</h3>
+    <h3 className="text-lg font-semibold">{sectionText.noFlashcards}</h3>
     <p className="mt-2 text-sm text-hero-muted">
       Crie flashcards para esta pasta ou subpasta.
     </p>
@@ -1910,7 +2077,7 @@ const formatDateTime = (date: string) =>
   </div>
 
   <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-    <h3 className="text-lg font-semibold">Desempenho dos flashcards</h3>
+    <h3 className="text-lg font-semibold">{sectionText.performanceTitle}</h3>
 
     {totalReviews === 0 ? (
       <p className="mt-3 text-sm text-hero-muted">
