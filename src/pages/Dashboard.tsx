@@ -4,10 +4,6 @@ import {
   Brain,
   LogOut,
   FolderOpen,
-  Layers3,
-  FileText,
-  BarChart3,
-  Play,
   ChevronRight,
   Clock3,
   Edit,
@@ -55,37 +51,6 @@ const Dashboard = () => {
     setNewName("");
   };
 
-  const cards = [
-    {
-      title: "Meus Materiais",
-      description: "Onde tudo acontece. Pastas, arquivos e estudo contextual.",
-      icon: FolderOpen,
-      meta: "12 pastas",
-      onClick: () => navigate("/folders"),
-    },
-    {
-      title: "Flashcards",
-      description: "Revise todos os cartões criados nas suas pastas.",
-      icon: Layers3,
-      meta: "156 cards",
-      onClick: () => navigate("/flashcards"),
-    },
-    {
-      title: "Resumos",
-      description: "Revisões rápidas dos seus conteúdos.",
-      icon: FileText,
-      meta: "8 resumos",
-      onClick: () => navigate("/summaries"),
-    },
-    {
-      title: "Desempenho",
-      description: "Acompanhe sua evolução e resultados.",
-      icon: BarChart3,
-      meta: "65%",
-      onClick: () => navigate("/folders"),
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-hero text-hero-foreground">
       {/* HEADER */}
@@ -118,7 +83,7 @@ const Dashboard = () => {
 
       {/* MAIN */}
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 space-y-10">
-        
+
         {/* BOAS-VINDAS */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="flex items-center gap-3">
@@ -134,7 +99,6 @@ const Dashboard = () => {
             </button>
           </div>
 
-          {/* EDITAR NOME */}
           {editing && (
             <div className="mt-4 flex gap-2">
               <Input
@@ -142,10 +106,7 @@ const Dashboard = () => {
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
               />
-
-              <Button onClick={handleSaveName}>
-                Salvar
-              </Button>
+              <Button onClick={handleSaveName}>Salvar</Button>
             </div>
           )}
 
@@ -186,44 +147,50 @@ const Dashboard = () => {
               onClick={() => navigate("/folders")}
               className="bg-gradient-primary text-primary-foreground"
             >
-              <Play className="mr-2 h-4 w-4" />
               Continuar
             </Button>
           </div>
         </motion.section>
 
-        {/* CARDS */}
-        <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {cards.map((card, index) => {
-            const Icon = card.icon;
+        {/* 🔥 CARD PREMIUM CENTRAL */}
+        <section className="flex justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.03 }}
+            transition={{ type: "spring", stiffness: 200, damping: 18 }}
+            onClick={() => navigate("/folders")}
+            className="w-full max-w-3xl cursor-pointer rounded-[36px] border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-10 shadow-[0_25px_90px_rgba(0,0,0,0.45)] hover:bg-white/10 transition"
+          >
+            <div className="flex items-start gap-6">
+              <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/15 border border-primary/25">
+                <FolderOpen className="h-10 w-10 text-primary" />
+              </div>
 
-            return (
-              <motion.button
-                key={card.title}
-                onClick={card.onClick}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 1.02 }}
-                className="rounded-3xl border border-white/10 bg-white/5 p-6 text-left transition hover:bg-white/10"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
-                  <Icon className="h-5 w-5 text-primary" />
-                </div>
-
-                <h3 className="mt-4 text-xl font-semibold">{card.title}</h3>
-
-                <p className="mt-2 text-sm text-hero-muted">
-                  {card.description}
+              <div className="flex-1">
+                <p className="text-xs uppercase tracking-[0.22em] text-hero-muted">
+                  Área principal
                 </p>
 
-                <div className="mt-4 flex justify-between text-sm text-hero-muted">
-                  {card.meta}
-                  <ChevronRight className="h-4 w-4" />
+                <h2 className="mt-2 text-4xl font-bold text-hero-foreground">
+                  Meus Materiais
+                </h2>
+
+                <p className="mt-4 text-lg text-hero-muted leading-relaxed">
+                  Organize seus estudos, crie subpastas, adicione materiais e
+                  use IA para aprender de forma inteligente.
+                </p>
+
+                <div className="mt-8 flex items-center justify-between">
+                  <span className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm text-hero-muted">
+                    Entrar no sistema
+                  </span>
+
+                  <ChevronRight className="h-6 w-6 text-primary" />
                 </div>
-              </motion.button>
-            );
-          })}
+              </div>
+            </div>
+          </motion.div>
         </section>
 
       </main>
