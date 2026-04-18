@@ -710,7 +710,7 @@ const formatDateTime = (date: string) =>
   const renderMaterialForm = (
     onSave: () => void,
     onCancel: () => void,
-    title = "Novo material"
+    title = t("materials.new")
   ) => (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -726,7 +726,7 @@ const formatDateTime = (date: string) =>
           onClick={() => setMaterialType("note")}
         >
           <NotebookPen className="mr-2 h-4 w-4" />
-          Nota de texto
+         {t("materials.textNote")}
         </Button>
 
         <Button
@@ -735,14 +735,14 @@ const formatDateTime = (date: string) =>
           onClick={() => setMaterialType("youtube")}
         >
           <Youtube className="mr-2 h-4 w-4" />
-          Link do YouTube
+        {t("materials.youtubeLink")}
         </Button>
       </div>
 
       <input
         value={materialTitle}
         onChange={(e) => setMaterialTitle(e.target.value)}
-        placeholder="Título do material"
+        placeholder={t("materials.title")}
         className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
       />
 
@@ -750,22 +750,22 @@ const formatDateTime = (date: string) =>
         <textarea
           value={materialContent}
           onChange={(e) => setMaterialContent(e.target.value)}
-          placeholder="Escreva a nota ou cole o conteúdo aqui"
+          placeholder={t("materials.notePlaceholder")}
           className="min-h-[140px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
         />
       ) : (
         <input
           value={materialUrl}
           onChange={(e) => setMaterialUrl(e.target.value)}
-          placeholder="Cole a URL do vídeo do YouTube"
+          placeholder={t("materials.youtubePlaceholder")}
           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
         />
       )}
 
       <div className="flex gap-3">
-        <Button onClick={onSave}>Salvar material</Button>
+        <Button onClick={onSave}>{t("materials.save")}</Button>
         <Button variant="outline" onClick={onCancel}>
-          Cancelar
+          {t("common.cancel")}
         </Button>
       </div>
     </motion.div>
@@ -792,7 +792,7 @@ const formatDateTime = (date: string) =>
               onClick={onAdd}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Adicionar primeiro material
+           {t("materials.addFirst")}
             </Button>
           )}
         </div>
@@ -822,12 +822,12 @@ const formatDateTime = (date: string) =>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold">{material.title}</h3>
                     <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-hero-muted">
-                      {material.type === "note" ? "Nota" : "YouTube"}
+                      {material.type === "note" ? t("materials.note") : "YouTube"}
                     </span>
                   </div>
 
                   <p className="mt-1 text-xs text-hero-muted">
-                    Criado em {formatDate(material.createdAt)}
+                    {t("common.createdAt")} {formatDate(material.createdAt)}
                   </p>
 
                   {material.type === "note" && material.content && (
@@ -843,16 +843,16 @@ const formatDateTime = (date: string) =>
                       rel="noreferrer"
                       className="mt-3 inline-block text-sm text-primary underline"
                     >
-                      Abrir vídeo
+                     {t("materials.openVideo")}
                     </a>
                   )}
 
                   <div className="mt-4 flex flex-wrap gap-2">
                     <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
-                      Fonte: {material.sourceType || "não definida"}
+                     {t("materials.source")}: {material.sourceType || t("common.notDefined")}
                     </span>
                     <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
-                      Contexto salvo
+                      {t("materials.savedContext")}
                     </span>
                   </div>
                 </div>
@@ -936,7 +936,7 @@ const formatDateTime = (date: string) =>
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{subFolder.name}</p>
                 <p className="text-xs text-hero-muted">
-                  {subFolder.materials.length} materiais
+                {subFolder.materials.length} {t("folders.materials")}
                 </p>
               </div>
             </div>
@@ -995,7 +995,7 @@ const formatDateTime = (date: string) =>
             to="/folders"
             className="hover:text-hero-foreground flex items-center gap-1 transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" /> Pastas
+          <ArrowLeft className="h-4 w-4" /> {t("folders.title")}
           </Link>
           <ChevronRight className="h-4 w-4 opacity-50" />
           <span className="text-hero-foreground">{folder.name}</span>
@@ -1020,7 +1020,7 @@ const formatDateTime = (date: string) =>
 
               <div>
                 <p className="text-xs uppercase tracking-[0.22em] text-hero-muted">
-  Área de estudo
+  {t("folder.studyArea")}
 </p>
                 <h1 className="mt-1 text-3xl font-bold">
                   {folder.name}
@@ -1030,8 +1030,8 @@ const formatDateTime = (date: string) =>
                 </h1>
                 <p className="mt-1 text-sm text-hero-muted max-w-2xl">
   {selectedSubFolder
-    ? `Subpasta: ${selectedSubFolder.name}`
-    : folder.description || "Sem descrição"}
+    ? `${t("subfolders.single")}: ${selectedSubFolder.name}`
+: folder.description || t("folder.noDescription")
 </p>
               </div>
             </div>
@@ -1068,9 +1068,9 @@ const formatDateTime = (date: string) =>
                     </div>
 
                     <div>
-                      <h2 className="text-xl font-semibold">Materiais da pasta</h2>
+                      <h2 className="text-xl font-semibold">{t("materials.folderTitle")}</h2>
                       <p className="text-sm text-hero-muted">
-                        Adicione materiais diretamente nesta pasta, sem precisar criar subpasta.
+                        {t("materials.folderDescription")}
                       </p>
                     </div>
                   </div>
@@ -1083,7 +1083,7 @@ const formatDateTime = (date: string) =>
                     className="bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-md"
                   >
                     <Plus className="mr-2 h-4 w-4" />
-                    Adicionar material na pasta
+                    {t("materials.addInFolder")}
                   </Button>
                 </div>
               </div>
@@ -1095,14 +1095,14 @@ const formatDateTime = (date: string) =>
                     setShowAddFolderMaterial(false);
                     resetMaterialForm();
                   },
-                  "Novo material da pasta"
+                 t("materials.newInFolder")
                 )}
 
               {renderMaterialsList(
                 folderMaterials,
                 deleteFolderMaterial,
-                "Nenhum material diretamente nesta pasta ainda",
-                "Adicione notas ou links do YouTube diretamente na pasta principal.",
+             t("materials.emptyFolder")
+             t("materials.emptyFolderDescription")
                 () => setShowAddFolderMaterial(true)
               )}
             </section>
@@ -1113,9 +1113,9 @@ const formatDateTime = (date: string) =>
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-glow">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <h2 className="text-xl font-semibold">Subpastas</h2>
+                     <h2 className="text-xl font-semibold">{t("subfolders.title")}</h2>
                       <p className="mt-1 text-sm text-hero-muted">
-                        Organize conteúdos por assunto.
+                       {t("subfolders.description")}
                       </p>
                     </div>
 
@@ -1125,7 +1125,7 @@ const formatDateTime = (date: string) =>
                       className="bg-gradient-primary text-primary-foreground hover:opacity-90"
                     >
                       <Plus className="mr-1 h-4 w-4" />
-                      Nova
+                      {t("folders.new")}
                     </Button>
                   </div>
 
@@ -1138,12 +1138,12 @@ const formatDateTime = (date: string) =>
                       <input
                         value={newSubFolderName}
                         onChange={(e) => setNewSubFolderName(e.target.value)}
-                        placeholder="Nome da subpasta"
+                        placeholder={t("subfolders.name")}
                         className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
                       />
 
                       <div>
-                        <p className="mb-2 text-sm text-hero-muted">Cor</p>
+                        <p className="mb-2 text-sm text-hero-muted">{t("folders.color")}</p>
                         <div className="flex flex-wrap gap-2">
                           {folderColors.map((color) => (
                             <button
@@ -1163,14 +1163,14 @@ const formatDateTime = (date: string) =>
 
                       <div className="flex gap-2">
                         <Button type="button" size="sm" onClick={createSubFolder}>
-  Salvar
+  {t("common.save")}
 </Button>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => setShowCreateSubFolder(false)}
                         >
-                          Cancelar
+                          {t("common.cancel")}
                         </Button>
                       </div>
                     </motion.div>
@@ -1179,9 +1179,9 @@ const formatDateTime = (date: string) =>
                   {subFolders.length === 0 ? (
                     <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center">
                       <FolderOpen className="mx-auto mb-3 h-8 w-8 text-hero-muted" />
-                      <p className="font-medium">Nenhuma subpasta criada ainda</p>
+                      <p className="font-medium">{t("subfolders.empty")}</p>
                       <p className="mt-1 text-sm text-hero-muted">
-                        Crie uma subpasta para separar assuntos.
+                        {t("subfolders.emptyDescription")}
                       </p>
                     </div>
                   ) : (
@@ -1254,16 +1254,16 @@ const formatDateTime = (date: string) =>
                 {!selectedSubFolder ? (
                   <div className="flex min-h-[360px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
                     <FolderOpen className="mb-4 h-12 w-12 text-hero-muted" />
-                    <h3 className="text-2xl font-semibold">Nenhuma subpasta selecionada</h3>
+                    <h3 className="text-2xl font-semibold">{t("subfolders.noneSelected")}</h3>
                     <p className="mt-2 max-w-xl text-sm text-hero-muted">
-                      Selecione uma subpasta para ver os materiais dela, ou continue usando os materiais da pasta principal.
+                      {t("subfolders.noneSelectedDescription")}
                     </p>
                     <Button
                       className="mt-5 bg-gradient-primary text-primary-foreground hover:opacity-90"
                       onClick={() => setShowCreateSubFolder(true)}
                     >
                       <Plus className="mr-2 h-4 w-4" />
-                      Criar subpasta
+                      {t("subfolders.create")}
                     </Button>
                   </div>
                 ) : (
@@ -1352,14 +1352,14 @@ const formatDateTime = (date: string) =>
                 <div>
                   <h3 className="text-lg font-semibold">
                     {selectedSubFolder
-                      ? `Chat da subpasta: ${selectedSubFolder.name}`
-                      : `Chat da pasta: ${folder.name}`}
+                      ? `${t("chat.subfolderTitle")}: ${selectedSubFolder.name}`
+: `${t("chat.folderTitle")}: ${folder.name}`
                   </h3>
                   <p className="text-sm text-hero-muted">
-                    Histórico salvo por contexto. No futuro, a IA responderá com base apenas nos materiais desta área.
+                   {t("chat.description")}
                   </p>
                   <p className="mt-2 text-xs text-hero-muted">
-                    Contexto atual: {selectedSubFolder?.name || folder.name}
+                    {t("chat.currentContext")}: {selectedSubFolder?.name || folder.name}
                   </p>
                 </div>
               </div>
@@ -1368,9 +1368,9 @@ const formatDateTime = (date: string) =>
                 {chatHistory.length === 0 ? (
                   <div className="flex min-h-[220px] flex-col items-center justify-center text-center">
                     <MessageSquare className="mb-3 h-10 w-10 text-hero-muted" />
-                    <p className="font-medium">Nenhuma conversa iniciada ainda</p>
+                    <p className="font-medium">{t("chat.emptyTitle")}</p>
                     <p className="mt-1 text-sm text-hero-muted">
-                      Envie uma mensagem para começar o chat deste contexto.
+                      {t("chat.emptyDescription")}
                     </p>
                   </div>
                 ) : (
@@ -1384,7 +1384,7 @@ const formatDateTime = (date: string) =>
                       }`}
                     >
                       <div className="mb-1 text-[11px] uppercase tracking-wide text-hero-muted">
-                        {message.role === "user" ? "Você" : "IA"}
+                        {message.role === "user" ? t("chat.you") : t("chat.ai")}
                       </div>
                       <p>{message.content}</p>
                       <p className="mt-2 text-[11px] text-hero-muted">
@@ -1399,12 +1399,12 @@ const formatDateTime = (date: string) =>
                 <input
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Escreva sua mensagem"
+                  placeholder={t("chat.placeholder")}
                   className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
                 />
                 <Button onClick={sendChatMessage} className="bg-gradient-primary text-primary-foreground">
                   <Send className="mr-2 h-4 w-4" />
-                  Enviar
+                 {t("chat.send")}
                 </Button>
               </div>
             </div>
