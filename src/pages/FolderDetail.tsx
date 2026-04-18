@@ -508,7 +508,11 @@ const FolderDetail = () => {
     materials: [],
   };
 
-  setSubFolders((prev) => [newFolder, ...prev]);
+  const updatedSubFolders = [newFolder, ...subFolders];
+
+  setSubFolders(updatedSubFolders);
+  localStorage.setItem(SUBFOLDERS_STORAGE_KEY, JSON.stringify(updatedSubFolders));
+
   setNewSubFolderName("");
   setNewSubFolderColor(folderColors[0]);
   setShowCreateSubFolder(false);
