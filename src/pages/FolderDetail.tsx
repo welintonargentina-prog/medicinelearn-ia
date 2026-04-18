@@ -1091,7 +1091,7 @@ const formatDateTime = (date: string) =>
                     setShowAddFolderMaterial(false);
                     resetMaterialForm();
                   },
-                 t("materials.newInFolder")
+                 t("materials.newInFolder"),
                 )}
 
         {renderMaterialsList(
