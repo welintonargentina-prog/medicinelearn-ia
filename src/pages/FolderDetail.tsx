@@ -1094,7 +1094,7 @@ const formatDateTime = (date: string) =>
                  t("materials.newInFolder")
                 )}
 
-         {renderMaterialsList(
+        {renderMaterialsList(
   selectedSubFolder.materials,
   deleteSubFolderMaterial,
   t("materials.emptySubfolder"),
