@@ -29,40 +29,84 @@ const translations: Translations = {
   // Features
   "features.tag": { pt: "Funcionalidades", en: "Features", es: "Funcionalidades" },
   "features.title": { pt: "Tudo que você precisa para dominar a medicina", en: "Everything you need to master medicine", es: "Todo lo que necesitas para dominar la medicina" },
-  "features.subtitle": { pt: "Ferramentas poderosas alimentadas por IA, projetadas especificamente para estudantes de medicina.", en: "Powerful AI-powered tools designed specifically for medical students.", es: "Herramientas poderosas impulsadas por IA, diseñadas específicamente para estudiantes de medicina." },
+  "features.subtitle": {
+    pt: "Ferramentas poderosas alimentadas por IA, projetadas especificamente para estudantes de medicina.",
+    en: "Powerful AI-powered tools designed specifically for medical students.",
+    es: "Herramientas poderosas impulsadas por IA, diseñadas específicamente para estudiantes de medicina.",
+  },
 
   "features.summaries.title": { pt: "Resumos Inteligentes", en: "Smart Summaries", es: "Resúmenes Inteligentes" },
-  "features.summaries.desc": { pt: "IA gera resumos estruturados, pontos-chave e notas de alto rendimento automaticamente.", en: "AI generates structured summaries, key points and high-yield notes automatically.", es: "La IA genera resúmenes estructurados, puntos clave y notas de alto rendimiento automáticamente." },
+  "features.summaries.desc": {
+    pt: "IA gera resumos estruturados, pontos-chave e notas de alto rendimento automaticamente.",
+    en: "AI generates structured summaries, key points and high-yield notes automatically.",
+    es: "La IA genera resúmenes estructurados, puntos clave y notas de alto rendimiento automáticamente.",
+  },
 
   "features.flashcards.title": { pt: "Flashcards com Repetição", en: "Spaced Flashcards", es: "Flashcards con Repetición" },
-  "features.flashcards.desc": { pt: "Flashcards gerados automaticamente com algoritmo de repetição espaçada.", en: "Auto-generated flashcards with spaced repetition algorithm.", es: "Flashcards generados automáticamente con algoritmo de repetición espaciada." },
+  "features.flashcards.desc": {
+    pt: "Flashcards gerados automaticamente com algoritmo de repetição espaçada.",
+    en: "Auto-generated flashcards with spaced repetition algorithm.",
+    es: "Flashcards generados automáticamente con algoritmo de repetición espaciada.",
+  },
 
   "features.tutor.title": { pt: "Tutor IA Médico", en: "AI Medical Tutor", es: "Tutor IA Médico" },
-  "features.tutor.desc": { pt: "Tire dúvidas, compare doenças e receba explicações passo a passo.", en: "Ask questions, compare diseases and get step-by-step explanations.", es: "Haz preguntas, compara enfermedades y recibe explicaciones paso a paso." },
+  "features.tutor.desc": {
+    pt: "Tire dúvidas, compare doenças e receba explicações passo a passo.",
+    en: "Ask questions, compare diseases and get step-by-step explanations.",
+    es: "Haz preguntas, compara enfermedades y recibe explicaciones paso a paso.",
+  },
 
   "features.quizzes.title": { pt: "Quizzes & Simulados", en: "Quizzes & Mock Exams", es: "Quizzes y Simulacros" },
-  "features.quizzes.desc": { pt: "Provas cronometradas com níveis de dificuldade e análise de desempenho.", en: "Timed exams with difficulty levels and performance analysis.", es: "Exámenes cronometrados con niveles de dificultad y análisis de rendimiento." },
+  "features.quizzes.desc": {
+    pt: "Provas cronometradas com níveis de dificuldade e análise de desempenho.",
+    en: "Timed exams with difficulty levels and performance analysis.",
+    es: "Exámenes cronometrados con niveles de dificultad y análisis de rendimiento.",
+  },
 
   "features.cases.title": { pt: "Casos Clínicos", en: "Clinical Cases", es: "Casos Clínicos" },
-  "features.cases.desc": { pt: "Cenários reais de pacientes com diagnóstico e decisão de tratamento.", en: "Real patient scenarios with diagnosis and treatment decisions.", es: "Escenarios reales de pacientes con diagnóstico y decisión de tratamiento." },
+  "features.cases.desc": {
+    pt: "Cenários reais de pacientes com diagnóstico e decisão de tratamento.",
+    en: "Real patient scenarios with diagnosis and treatment decisions.",
+    es: "Escenarios reales de pacientes con diagnóstico y decisión de tratamiento.",
+  },
 
   "features.audio.title": { pt: "Modo Áudio", en: "Audio Mode", es: "Modo Audio" },
-  "features.audio.desc": { pt: "Transforme qualquer material em podcasts e áudio de revisão rápida.", en: "Transform any material into podcasts and quick review audio.", es: "Transforma cualquier material en podcasts y audio de repaso rápido." },
+  "features.audio.desc": {
+    pt: "Transforme qualquer material em podcasts e áudio de revisão rápida.",
+    en: "Transform any material into podcasts and quick review audio.",
+    es: "Transforma cualquier material en podcasts y audio de repaso rápido.",
+  },
 
   // How it works
   "how.tag": { pt: "Como Funciona", en: "How It Works", es: "Cómo Funciona" },
   "how.title": { pt: "3 passos para estudar com IA", en: "3 steps to study with AI", es: "3 pasos para estudiar con IA" },
   "how.step1.title": { pt: "Envie seus materiais", en: "Upload your materials", es: "Sube tus materiales" },
-  "how.step1.desc": { pt: "PDFs, slides, gravações, links do YouTube, notas e provas anteriores.", en: "PDFs, slides, recordings, YouTube links, notes and past exams.", es: "PDFs, diapositivas, grabaciones, enlaces de YouTube, notas y exámenes anteriores." },
+  "how.step1.desc": {
+    pt: "PDFs, slides, gravações, links do YouTube, notas e provas anteriores.",
+    en: "PDFs, slides, recordings, YouTube links, notes and past exams.",
+    es: "PDFs, diapositivas, grabaciones, enlaces de YouTube, notas y exámenes anteriores.",
+  },
   "how.step2.title": { pt: "IA processa tudo", en: "AI processes everything", es: "La IA procesa todo" },
-  "how.step2.desc": { pt: "Nossa IA analisa e transforma em resumos, flashcards, quizzes e mais.", en: "Our AI analyzes and transforms into summaries, flashcards, quizzes and more.", es: "Nuestra IA analiza y transforma en resúmenes, flashcards, quizzes y más." },
+  "how.step2.desc": {
+    pt: "Nossa IA analisa e transforma em resumos, flashcards, quizzes e mais.",
+    en: "Our AI analyzes and transforms into summaries, flashcards, quizzes and more.",
+    es: "Nuestra IA analiza y transforma en resúmenes, flashcards, quizzes y más.",
+  },
   "how.step3.title": { pt: "Estude e domine", en: "Study and master", es: "Estudia y domina" },
-  "how.step3.desc": { pt: "Use as ferramentas para estudar de forma eficiente e acompanhe seu progresso.", en: "Use the tools to study efficiently and track your progress.", es: "Usa las herramientas para estudiar de forma eficiente y sigue tu progreso." },
+  "how.step3.desc": {
+    pt: "Use as ferramentas para estudar de forma eficiente e acompanhe seu progresso.",
+    en: "Use the tools to study efficiently and track your progress.",
+    es: "Usa las herramientas para estudiar de forma eficiente y sigue tu progreso.",
+  },
 
   // Pricing
   "pricing.tag": { pt: "Planos", en: "Pricing", es: "Planes" },
   "pricing.title": { pt: "Invista no seu futuro médico", en: "Invest in your medical future", es: "Invierte en tu futuro médico" },
-  "pricing.subtitle": { pt: "Escolha o plano ideal e comece a estudar de forma inteligente hoje.", en: "Choose the ideal plan and start studying smarter today.", es: "Elige el plan ideal y empieza a estudiar de forma inteligente hoy." },
+  "pricing.subtitle": {
+    pt: "Escolha o plano ideal e comece a estudar de forma inteligente hoje.",
+    en: "Choose the ideal plan and start studying smarter today.",
+    es: "Elige el plan ideal y empieza a estudiar de forma inteligente hoy.",
+  },
   "pricing.monthly": { pt: "/mês", en: "/month", es: "/mes" },
   "pricing.quarterly": { pt: "/trimestre", en: "/quarter", es: "/trimestre" },
   "pricing.popular": { pt: "Mais Popular", en: "Most Popular", es: "Más Popular" },
@@ -101,7 +145,11 @@ const translations: Translations = {
 
   // CTA
   "cta.title": { pt: "Pronto para revolucionar seus estudos?", en: "Ready to revolutionize your studies?", es: "¿Listo para revolucionar tus estudios?" },
-  "cta.subtitle": { pt: "Junte-se a milhares de estudantes de medicina que já estudam de forma mais inteligente.", en: "Join thousands of medical students who already study smarter.", es: "Únete a miles de estudiantes de medicina que ya estudian de forma más inteligente." },
+  "cta.subtitle": {
+    pt: "Junte-se a milhares de estudantes de medicina que já estudam de forma mais inteligente.",
+    en: "Join thousands of medical students who already study smarter.",
+    es: "Únete a miles de estudiantes de medicina que ya estudian de forma más inteligente.",
+  },
   "cta.button": { pt: "Começar Agora — É Grátis", en: "Start Now — It's Free", es: "Empezar Ahora — Es Gratis" },
 
   // Footer
@@ -126,6 +174,66 @@ const translations: Translations = {
   "dash.weak": { pt: "Áreas Fracas", en: "Weak Areas", es: "Áreas Débiles" },
   "dash.time": { pt: "Tempo de Estudo", en: "Study Time", es: "Tiempo de Estudio" },
   "dash.hours": { pt: "horas esta semana", en: "hours this week", es: "horas esta semana" },
+
+  "dash.subtitle": {
+    pt: "Continue seus estudos com foco.",
+    en: "Continue your studies with focus.",
+    es: "Continúa tus estudios con enfoque.",
+  },
+
+  "dash.myMaterials": {
+    pt: "Meus Materiais",
+    en: "My Materials",
+    es: "Mis Materiales",
+  },
+
+  "dash.materialsDescription": {
+    pt: "Organize seus estudos, crie subpastas, adicione materiais e use IA para aprender de forma inteligente.",
+    en: "Organize your studies, create subfolders, add materials and use AI to learn intelligently.",
+    es: "Organiza tus estudios, crea subcarpetas, agrega materiales y usa IA para aprender de forma inteligente.",
+  },
+
+  "dash.enterSystem": {
+    pt: "Entrar no sistema",
+    en: "Enter the system",
+    es: "Entrar al sistema",
+  },
+
+  "common.logout": {
+    pt: "Sair",
+    en: "Log out",
+    es: "Salir",
+  },
+
+  "common.save": {
+    pt: "Salvar",
+    en: "Save",
+    es: "Guardar",
+  },
+
+  "dash.newName": {
+    pt: "Novo nome",
+    en: "New name",
+    es: "Nuevo nombre",
+  },
+
+  "dash.continueStudying": {
+    pt: "Continuar estudando",
+    en: "Continue studying",
+    es: "Continuar estudiando",
+  },
+
+  "dash.lastAccess": {
+    pt: "Último acesso há 2 horas",
+    en: "Last accessed 2 hours ago",
+    es: "Último acceso hace 2 horas",
+  },
+
+  "common.continue": {
+    pt: "Continuar",
+    en: "Continue",
+    es: "Continuar",
+  },
 };
 
 interface LanguageContextType {
@@ -136,7 +244,9 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem("medlearn-lang");
     return (saved as Language) || "pt";
