@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export type FolderItem = {
   id: string;
@@ -31,7 +31,6 @@ export type FolderItem = {
 
 export const STORAGE_KEY = "medlearn_folders";
 
-// sem pastas automáticas
 const defaultFolders: FolderItem[] = [];
 
 const folderColors = [
@@ -58,6 +57,7 @@ const item = {
 const Folders = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [folders, setFolders] = useState<FolderItem[]>([]);
   const [showCreate, setShowCreate] = useState(false);
@@ -101,7 +101,7 @@ const Folders = () => {
       id: crypto.randomUUID(),
       name: newFolderName.trim(),
       description:
-        newFolderDescription.trim() || "Pasta criada para organizar seus materiais.",
+        newFolderDescription.trim() || t("folders.defaultDescription"),
       color: newFolderColor,
       icon: "📁",
       materialsCount: 0,
@@ -155,7 +155,7 @@ const Folders = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate("/dashboard")}
-              className="p-2 rounded-lg hover:bg-white/10 transition"
+              className="rounded-lg p-2 transition hover:bg-white/10"
             >
               <ChevronLeft className="h-5 w-5 text-hero-muted hover:text-white" />
             </button>
@@ -169,7 +169,6 @@ const Folders = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <LanguageSwitcher />
             <Button
               variant="ghost"
               size="sm"
@@ -180,20 +179,20 @@ const Folders = () => {
               className="text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Sair</span>
+              <span className="hidden sm:inline">{t("common.logout")}</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 space-y-6">
+      <main className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <FolderOpen className="h-6 w-6 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">Minhas Pastas</h1>
+              <h1 className="text-2xl font-bold">{t("folders.title")}</h1>
               <p className="text-sm text-hero-muted">
-                Organize seus materiais por tema, disciplina ou assunto.
+                {t("folders.subtitle")}
               </p>
             </div>
           </div>
@@ -203,33 +202,33 @@ const Folders = () => {
             className="bg-gradient-primary text-primary-foreground"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Nova pasta
+            {t("folders.new")}
           </Button>
         </div>
 
         {showCreate && (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-4">
-            <h2 className="text-lg font-semibold">Criar pasta</h2>
+          <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-5">
+            <h2 className="text-lg font-semibold">{t("folders.createTitle")}</h2>
 
             <div className="grid gap-4">
               <input
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
-                placeholder="Nome da pasta"
+                placeholder={t("folders.name")}
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
               />
 
               <textarea
                 value={newFolderDescription}
                 onChange={(e) => setNewFolderDescription(e.target.value)}
-                placeholder="Descrição da pasta"
+                placeholder={t("folders.description")}
                 className="min-h-[100px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
               />
 
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm text-hero-muted">
                   <Palette className="h-4 w-4" />
-                  Escolha uma cor
+                  {t("folders.chooseColor")}
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {folderColors.map((color) => (
@@ -239,7 +238,7 @@ const Folders = () => {
                       onClick={() => setNewFolderColor(color)}
                       className={`h-8 w-8 rounded-full border-2 transition ${
                         newFolderColor === color
-                          ? "border-white scale-110"
+                          ? "scale-110 border-white"
                           : "border-transparent"
                       }`}
                       style={{ backgroundColor: color }}
@@ -253,10 +252,10 @@ const Folders = () => {
                   onClick={createFolder}
                   className="bg-gradient-primary text-primary-foreground"
                 >
-                  Salvar pasta
+                  {t("folders.save")}
                 </Button>
                 <Button variant="outline" onClick={() => setShowCreate(false)}>
-                  Cancelar
+                  {t("common.cancel")}
                 </Button>
               </div>
             </div>
@@ -265,16 +264,15 @@ const Folders = () => {
 
         {sortedFolders.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-14 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 border border-white/10">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
               <FolderOpen className="h-8 w-8 text-hero-muted" />
             </div>
 
             <h3 className="mt-5 text-xl font-semibold">
-              Você ainda não criou nenhuma pasta
+              {t("folders.emptyTitle")}
             </h3>
-            <p className="mt-2 text-sm text-hero-muted max-w-md mx-auto">
-              Crie sua primeira pasta para começar a organizar materiais,
-              subpastas e todo o seu estudo contextual.
+            <p className="mx-auto mt-2 max-w-md text-sm text-hero-muted">
+              {t("folders.emptyDescription")}
             </p>
 
             <Button
@@ -282,7 +280,7 @@ const Folders = () => {
               className="mt-6 bg-gradient-primary text-primary-foreground"
             >
               <Plus className="mr-2 h-4 w-4" />
-              Criar primeira pasta
+              {t("folders.createFirst")}
             </Button>
           </div>
         ) : (
@@ -359,14 +357,14 @@ const Folders = () => {
 
                         <div className="mt-4 flex items-center gap-1 text-xs text-hero-muted">
                           <FileText className="h-3 w-3" />
-                          {folder.materialsCount} materiais
+                          {folder.materialsCount} {t("folders.materials")}
                         </div>
 
                         <Link
                           to={`/folders/${folder.id}`}
                           className="mt-5 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium transition hover:bg-white/10"
                         >
-                          Abrir pasta
+                          {t("folders.open")}
                           <ChevronRight className="h-4 w-4 text-hero-muted" />
                         </Link>
                       </>
@@ -375,12 +373,14 @@ const Folders = () => {
                         <input
                           value={editingName}
                           onChange={(e) => setEditingName(e.target.value)}
-                          placeholder="Nome da pasta"
+                          placeholder={t("folders.name")}
                           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
                         />
 
                         <div>
-                          <div className="mb-2 text-xs text-hero-muted">Cor da pasta</div>
+                          <div className="mb-2 text-xs text-hero-muted">
+                            {t("folders.color")}
+                          </div>
                           <div className="flex flex-wrap gap-2">
                             {folderColors.map((color) => (
                               <button
@@ -389,7 +389,7 @@ const Folders = () => {
                                 onClick={() => setEditingColor(color)}
                                 className={`h-7 w-7 rounded-full border-2 transition ${
                                   editingColor === color
-                                    ? "border-white scale-110"
+                                    ? "scale-110 border-white"
                                     : "border-transparent"
                                 }`}
                                 style={{ backgroundColor: color }}
