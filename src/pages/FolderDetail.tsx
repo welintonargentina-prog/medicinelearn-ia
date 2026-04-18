@@ -973,8 +973,7 @@ const formatDateTime = (date: string) =>
 </div>
 
           <div className="flex items-center gap-3">
-            <LanguageSwitcher />
-            <Button
+  <Button
               variant="ghost"
               size="sm"
               onClick={async () => {
