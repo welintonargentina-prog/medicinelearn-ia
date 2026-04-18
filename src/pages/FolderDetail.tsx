@@ -1345,7 +1345,7 @@ const formatDateTime = (date: string) =>
                         </Button>
                       </div>
                     </motion.div>
-                  )}
+);
 
                   {subFolders.length === 0 ? (
                     <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center">
