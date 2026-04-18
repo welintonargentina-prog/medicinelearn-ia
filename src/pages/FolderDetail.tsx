@@ -1030,8 +1030,8 @@ const formatDateTime = (date: string) =>
                 </h1>
                 <p className="mt-1 text-sm text-hero-muted max-w-2xl">
   {selectedSubFolder
-    ? `${t("subfolders.single")}: ${selectedSubFolder.name}`
-    : folder.description || t("folder.noDescription")}
+  ? `${t("subfolders.single")}: ${selectedSubFolder.name}`
+  : folder.description || t("folder.noDescription")}
 </p>
               </div>
             </div>
@@ -1098,12 +1098,12 @@ const formatDateTime = (date: string) =>
                  t("materials.newInFolder")
                 )}
 
-             {renderMaterialsList(
-  folderMaterials,
-  deleteFolderMaterial,
-  t("materials.emptyFolder"),
-  t("materials.emptyFolderDescription"),
-  () => setShowAddFolderMaterial(true)
+         {renderMaterialsList(
+  selectedSubFolder.materials,
+  deleteSubFolderMaterial,
+  t("materials.emptySubfolder"),
+  t("materials.emptySubfolderDescription"),
+  () => setShowAddMaterial(true)
 )}
             </section>
 
