@@ -1351,10 +1351,10 @@ const formatDateTime = (date: string) =>
                 <MessageSquare className="h-6 w-6 text-primary" />
                 <div>
                   <h3 className="text-lg font-semibold">
-                    {selectedSubFolder
-                      ? `${t("chat.subfolderTitle")}: ${selectedSubFolder.name}`
-: `${t("chat.folderTitle")}: ${folder.name}`
-                  </h3>
+  {selectedSubFolder
+    ? `${t("chat.subfolderTitle")}: ${selectedSubFolder.name}`
+    : `${t("chat.folderTitle")}: ${folder.name}`}
+</h3>
                   <p className="text-sm text-hero-muted">
                    {t("chat.description")}
                   </p>
