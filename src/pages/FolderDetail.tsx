@@ -1098,13 +1098,13 @@ const formatDateTime = (date: string) =>
                  t("materials.newInFolder")
                 )}
 
-              {renderMaterialsList(
-                folderMaterials,
-                deleteFolderMaterial,
-             t("materials.emptyFolder")
-             t("materials.emptyFolderDescription")
-                () => setShowAddFolderMaterial(true)
-              )}
+             {renderMaterialsList(
+  folderMaterials,
+  deleteFolderMaterial,
+  t("materials.emptyFolder"),
+  t("materials.emptyFolderDescription"),
+  () => setShowAddFolderMaterial(true)
+)}
             </section>
 
             {/* Subpastas + materiais da subpasta */}
@@ -1225,7 +1225,7 @@ const formatDateTime = (date: string) =>
                                 <div>
                                   <p className="font-medium">{subFolder.name}</p>
                                   <p className="text-xs text-hero-muted">
-                                    {subFolder.materials.length} materiais
+                                    {subFolder.materials.length} {t("folders.materials")}
                                   </p>
                                 </div>
                               </div>
@@ -1293,14 +1293,14 @@ const formatDateTime = (date: string) =>
                               {selectedSubFolder.name}
                             </h2>
                             <p className="text-sm text-hero-muted">
-                              Criada em {formatDate(selectedSubFolder.createdAt)}
+                             {t("common.createdAt")} {formatDate(selectedSubFolder.createdAt)}
                             </p>
                             <div className="mt-2 flex flex-wrap gap-2 text-xs text-hero-muted">
                               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                                {selectedSubFolder.materials.length} materiais
+                             {selectedSubFolder.materials.length} {t("folders.materials")}
                               </span>
                               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                                {chatHistory.length} mensagens
+                                {chatHistory.length} {t("chat.messages")}
                               </span>
                               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
                                 {flashcards.length} flashcards
@@ -1317,7 +1317,7 @@ const formatDateTime = (date: string) =>
                           className="bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-md"
                         >
                           <Plus className="mr-2 h-4 w-4" />
-                          Adicionar material na subpasta
+                          {t("materials.addInSubfolder")}
                         </Button>
                       </div>
                     </motion.div>
@@ -1329,14 +1329,14 @@ const formatDateTime = (date: string) =>
                           setShowAddMaterial(false);
                           resetMaterialForm();
                         },
-                        "Novo material da subpasta"
+                       t("materials.newInSubfolder")
                       )}
 
                     {renderMaterialsList(
                       selectedSubFolder.materials,
                       deleteSubFolderMaterial,
-                      "Nenhum material nesta subpasta ainda",
-                      "Adicione notas ou links do YouTube para montar o conteúdo desta subpasta.",
+                      t("materials.emptySubfolder")
+                     t("materials.emptySubfolderDescription")
                       () => setShowAddMaterial(true)
                     )}
                   </>
