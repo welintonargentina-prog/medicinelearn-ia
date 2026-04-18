@@ -1039,7 +1039,7 @@ const formatDateTime = (date: string) =>
               </Button>
             </div>
           </motion.div>
-        ))}
+        )}
       </div>
     );
   };
