@@ -1036,13 +1036,13 @@ const formatDateTime = (date: string) =>
                 className="text-red-400 hover:bg-white/10"
               >
                 <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </div>
-    );
-  };
+             </Button>
+        </div>
+      </motion.div>
+    ))}
+  </div>
+);
+};
 
   return (
    <div className="flex min-h-screen bg-hero text-hero-foreground">
