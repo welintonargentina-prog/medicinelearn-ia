@@ -1042,19 +1042,21 @@ const formatDateTime = (date: string) =>
 
   return (
    <div className="flex min-h-screen bg-hero text-hero-foreground">
-     <div
+    <div
   className={cn(
     "transition-all duration-300 border-r border-white/10 bg-white/5 backdrop-blur-md",
     sidebarOpen ? "w-64" : "w-16"
   )}
-<div className="flex justify-end p-2">
-  <Button
-    variant="ghost"
-    size="icon"
-    onClick={() => setSidebarOpen(!sidebarOpen)}
-  >
-    {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
-  </Button>
+>
+  <div className="flex justify-end p-2">
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setSidebarOpen(!sidebarOpen)}
+    >
+      {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
+    </Button>
+  </div>
 </div>
 
   <div className="px-2 pb-4 space-y-2">
