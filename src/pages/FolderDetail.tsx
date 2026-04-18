@@ -1099,11 +1099,11 @@ const formatDateTime = (date: string) =>
                 )}
 
         {renderMaterialsList(
-  selectedSubFolder.materials,
-  deleteSubFolderMaterial,
-  t("materials.emptySubfolder"),
-  t("materials.emptySubfolderDescription"),
-  () => setShowAddMaterial(true)
+  folderMaterials,
+  deleteFolderMaterial,
+  t("materials.emptyFolder"),
+  t("materials.emptyFolderDescription"),
+  () => setShowAddFolderMaterial(true)
 )}
             </section>
 
