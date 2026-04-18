@@ -1028,11 +1028,7 @@ const formatDateTime = (date: string) =>
                    <span className="text-hero-muted font-normal"> / {selectedSubFolder.name}</span>
                   )}
                 </h1>
-                <p className="mt-1 text-sm text-hero-muted max-w-2xl">
-  {selectedSubFolder
-  ? `${t("subfolders.single")}: ${selectedSubFolder.name}`
-  : folder.description || t("folder.noDescription")}
-</p>
+                <p className="mt-1 text-sm text-hero-muted max-w-2xl">{selectedSubFolder ? `${t("subfolders.single")}: ${selectedSubFolder.name}` : folder.description || t("folder.noDescription")}</p>
               </div>
             </div>
           </div>
