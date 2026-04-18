@@ -939,109 +939,105 @@ const formatDateTime = (date: string) =>
   );
 
   const renderMaterialsList = (
-    materials: MaterialItem[],
-    onDelete: (id: string) => void,
-    emptyTitle: string,
-    emptyDescription: string,
-    onAdd?: () => void
-  ) => {
-    if (materials.length === 0) {
-      return (
-        <div className="flex min-h-[260px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
-          <FileText className="mb-4 h-12 w-12 text-hero-muted" />
-          <h3 className="text-xl font-semibold">{emptyTitle}</h3>
-          <p className="mt-2 max-w-xl text-sm text-hero-muted">
-            {emptyDescription}
-          </p>
-          {onAdd && (
-            <Button
-              className="mt-5 bg-gradient-primary text-primary-foreground hover:opacity-90"
-              onClick={onAdd}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-           {t("materials.addFirst")}
-            </Button>
-          )}
-        </div>
-      );
-    }
-
+  materials: MaterialItem[],
+  onDelete: (id: string) => void,
+  emptyTitle: string,
+  emptyDescription: string,
+  onAdd?: () => void
+) => {
+  if (materials.length === 0) {
     return (
-      <div className="grid gap-4">
-        {materials.map((material) => (
-          <motion.div
-            key={material.id}
-            whileHover={{ scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 220, damping: 20 }}
-            className="cursor-pointer rounded-3xl border border-white/10 bg-white/5 p-5 transition-all hover:bg-white/10"
+      <div className="flex min-h-[260px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-white/5 p-10 text-center">
+        <FileText className="mb-4 h-12 w-12 text-hero-muted" />
+        <h3 className="text-xl font-semibold">{emptyTitle}</h3>
+        <p className="mt-2 max-w-xl text-sm text-hero-muted">
+          {emptyDescription}
+        </p>
+        {onAdd && (
+          <Button
+            className="mt-5 bg-gradient-primary text-primary-foreground hover:opacity-90"
+            onClick={onAdd}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
-                  {material.type === "note" ? (
-                    <NotebookPen className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Youtube className="h-5 w-5 text-red-400" />
-                  )}
-                </div>
+            <Plus className="mr-2 h-4 w-4" />
+            {t("materials.addFirst")}
+          </Button>
+        )}
+      </div>
+    );
+  }
 
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-semibold">
-  {selectedSubFolder
-    ? `${sectionText.quizTitleSubfolder}: ${selectedSubFolder.name}`
-    : `${sectionText.quizTitleFolder}: ${folder.name}`}
-</h3>
-
-<p className="text-sm text-hero-muted">
-  {sectionText.quizDescription}
-</p>
-
-                  <p className="mt-1 text-xs text-hero-muted">
-                    {t("common.createdAt")} {formatDate(material.createdAt)}
-                  </p>
-
-                  {material.type === "note" && material.content && (
-                    <p className="mt-3 max-w-3xl text-sm text-hero-muted line-clamp-3">
-                      {material.content}
-                    </p>
-                  )}
-
-                  {material.type === "youtube" && material.url && (
-                    <a
-                      href={material.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-3 inline-block text-sm text-primary underline"
-                    >
-                     {t("materials.openVideo")}
-                    </a>
-                  )}
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
-                     {t("materials.source")}: {material.sourceType || t("common.notDefined")}
-                    </span>
-                    <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
-                      {t("materials.savedContext")}
-                    </span>
-                  </div>
-                </div>
+  return (
+    <div className="grid gap-4">
+      {materials.map((material) => (
+        <motion.div
+          key={material.id}
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 220, damping: 20 }}
+          className="cursor-pointer rounded-3xl border border-white/10 bg-white/5 p-5 transition-all hover:bg-white/10"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
+                {material.type === "note" ? (
+                  <NotebookPen className="h-5 w-5 text-primary" />
+                ) : (
+                  <Youtube className="h-5 w-5 text-red-400" />
+                )}
               </div>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onDelete(material.id)}
-                className="text-red-400 hover:bg-white/10"
-              >
-                <Trash2 className="h-4 w-4" />
-             </Button>
-        </div>
-      </motion.div>
-    ))}
-  </div>
-);
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-semibold">{material.title}</h3>
+                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-hero-muted">
+                    {material.type === "note" ? t("materials.note") : "YouTube"}
+                  </span>
+                </div>
+
+                <p className="mt-1 text-xs text-hero-muted">
+                  {t("common.createdAt")} {formatDate(material.createdAt)}
+                </p>
+
+                {material.type === "note" && material.content && (
+                  <p className="mt-3 max-w-3xl text-sm text-hero-muted line-clamp-3">
+                    {material.content}
+                  </p>
+                )}
+
+                {material.type === "youtube" && material.url && (
+                  <a
+                    href={material.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-block text-sm text-primary underline"
+                  >
+                    {t("materials.openVideo")}
+                  </a>
+                )}
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
+                    {t("materials.source")}: {material.sourceType || t("common.notDefined")}
+                  </span>
+                  <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-hero-muted">
+                    {t("materials.savedContext")}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onDelete(material.id)}
+              className="text-red-400 hover:bg-white/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
 };
 
   return (
