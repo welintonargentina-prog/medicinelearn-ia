@@ -1051,10 +1051,10 @@ const formatDateTime = (date: string) =>
               <Target className="mr-1.5 h-3.5 w-3.5" /> {t("tabs.simulados")}
             </TabsTrigger>
             <TabsTrigger value="flashcards" className={tabTriggerClass}>
-              <Layers3 className="mr-1.5 h-3.5 w-3.5" /> Flashcards
+             <Layers3 className="mr-1.5 h-3.5 w-3.5" /> {t("tabs.flashcards")}
             </TabsTrigger>
             <TabsTrigger value="desempenho" className={tabTriggerClass}>
-              <BarChart3 className="mr-1.5 h-3.5 w-3.5" /> Desempenho
+            <BarChart3 className="mr-1.5 h-3.5 w-3.5" /> {t("tabs.performance")}
             </TabsTrigger>
           </TabsList>
 
