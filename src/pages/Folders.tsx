@@ -352,7 +352,9 @@ const Folders = () => {
                       <>
                         <h3 className="mt-4 text-lg font-semibold">{folder.name}</h3>
                         <p className="mt-1 text-sm leading-relaxed text-hero-muted">
-                          {folder.description}
+                          {folder.description === "Pasta criada para organizar seus materiais."
+  ? t("folders.defaultDescription")
+  : folder.description}
                         </p>
 
                         <div className="mt-4 flex items-center gap-1 text-xs text-hero-muted">
