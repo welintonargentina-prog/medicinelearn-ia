@@ -1057,7 +1057,6 @@ const formatDateTime = (date: string) =>
       {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
     </Button>
   </div>
-</div>
 
   <div className="px-2 pb-4 space-y-2">
     <button
@@ -1086,7 +1085,7 @@ const formatDateTime = (date: string) =>
       return (
         <button
           key={subFolder.id}
-         onClick={() => navigate(`/folders/${folderId}/sub/${subFolder.id}`)}
+          onClick={() => navigate(`/folders/${folderId}/sub/${subFolder.id}`)}
           className={cn(
             "w-full rounded-xl text-left transition border",
             sidebarOpen ? "px-3 py-3" : "px-2 py-3 flex justify-center",
@@ -1104,11 +1103,11 @@ const formatDateTime = (date: string) =>
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{subFolder.name}</p>
                 <p className="text-xs text-hero-muted">
-                {subFolder.materials.length} {t("folders.materials")}
+                  {subFolder.materials.length} {t("folders.materials")}
                 </p>
               </div>
             </div>
-          {sidebarOpen ? (
+          ) : (
             <FolderOpen
               className="h-4 w-4"
               style={{ color: subFolder.color }}
