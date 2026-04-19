@@ -1108,7 +1108,7 @@ const formatDateTime = (date: string) =>
                 </p>
               </div>
             </div>
-          ) : (
+          {sidebarOpen ? (
             <FolderOpen
               className="h-4 w-4"
               style={{ color: subFolder.color }}
