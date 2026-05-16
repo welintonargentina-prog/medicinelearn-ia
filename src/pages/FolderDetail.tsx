@@ -720,7 +720,9 @@ ${userMessage.content}
     setQuizHistory((prev) => [newQuiz, ...prev]);
     setShowQuizConfig(false);
   };
-
+const deleteQuiz = (quizId: string) => {
+    setQuizHistory((prev) => prev.filter((quiz) => quiz.id !== quizId));
+  };
   const createFlashcard = () => {
     if (!flashFront.trim() || !flashBack.trim()) return;
     const newCard: FlashcardItem = {
