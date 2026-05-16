@@ -45,7 +45,7 @@ type FolderItem = {
   createdAt: string;
 };
 
-type MaterialType = "note" | "youtube";
+type MaterialType = "note" | "youtube" | "file";
 
 type MaterialItem = {
   id: string;
@@ -53,6 +53,10 @@ type MaterialItem = {
   type: MaterialType;
   content?: string;
   url?: string;
+  fileName?: string;
+  fileMime?: string;
+  fileSize?: number;
+  fileDataUrl?: string;
   createdAt: string;
   sourceType?: "pdf" | "video" | "note" | "chat" | "file";
   sourceTitle?: string;
