@@ -37,7 +37,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Configuração Global da IA Gratuita do Gemini
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const ai = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+const ai = apiKey ? new GoogleGenerativeAI(apiKey, { apiVersion: "v1beta" }) : null;
 
 type FolderItem = {
   id: string;
