@@ -293,7 +293,7 @@ const FolderDetail = () => {
   const executeGeminiCall = async (prompt: string) => {
     const key = import.meta.env.VITE_GEMINI_API_KEY;
     if (!key) throw new Error("VITE_GEMINI_API_KEY ausente.");
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/models/gemini-1.5-flash:generateContent?key=${key}`;
 
     const res = await fetch(url, {
       method: "POST",
