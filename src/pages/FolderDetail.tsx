@@ -724,22 +724,41 @@ const formatDateTime = (date: string) =>
     setMaterialContent("");
     setMaterialUrl("");
     setMaterialType("note");
+    setMaterialFile(null);
+    setFileUploadError("");
   };
 
   const buildMaterial = (): MaterialItem | null => {
-    if (!materialTitle.trim()) return null;
+    if (!materialTitle.trim() && materialType !== "file") return null;
     if (materialType === "note" && !materialContent.trim()) return null;
     if (materialType === "youtube" && !materialUrl.trim()) return null;
+    if (materialType === "file" && !materialFile) return null;
+
+    const isPdf = materialType === "file" && materialFile?.mime === "application/pdf";
+    const finalTitle =
+      materialTitle.trim() ||
+      (materialType === "file" ? materialFile?.name ?? "Arquivo" : "");
 
     return {
       id: crypto.randomUUID(),
-      title: materialTitle.trim(),
+      title: finalTitle,
       type: materialType,
       content: materialType === "note" ? materialContent.trim() : undefined,
       url: materialType === "youtube" ? materialUrl.trim() : undefined,
+      fileName: materialType === "file" ? materialFile?.name : undefined,
+      fileMime: materialType === "file" ? materialFile?.mime : undefined,
+      fileSize: materialType === "file" ? materialFile?.size : undefined,
+      fileDataUrl: materialType === "file" ? materialFile?.dataUrl : undefined,
       createdAt: new Date().toISOString(),
-      sourceType: materialType === "youtube" ? "video" : "note",
-      sourceTitle: materialTitle.trim(),
+      sourceType:
+        materialType === "youtube"
+          ? "video"
+          : materialType === "file"
+          ? isPdf
+            ? "pdf"
+            : "file"
+          : "note",
+      sourceTitle: finalTitle,
       sourceId: crypto.randomUUID(),
       pageReference: "",
       videoTimestamp: "",
