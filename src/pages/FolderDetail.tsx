@@ -937,12 +937,25 @@ const formatDateTime = (date: string) =>
           <Youtube className="mr-2 h-4 w-4" />
         {t("materials.youtubeLink")}
         </Button>
+
+        <Button
+          type="button"
+          variant={materialType === "file" ? "default" : "outline"}
+          onClick={() => setMaterialType("file")}
+        >
+          <Upload className="mr-2 h-4 w-4" />
+          PDF / Arquivo
+        </Button>
       </div>
 
       <input
         value={materialTitle}
         onChange={(e) => setMaterialTitle(e.target.value)}
-        placeholder={t("materials.title")}
+        placeholder={
+          materialType === "file"
+            ? "Título (opcional — usa o nome do arquivo)"
+            : t("materials.title")
+        }
         className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
       />
 
@@ -953,13 +966,78 @@ const formatDateTime = (date: string) =>
           placeholder={t("materials.notePlaceholder")}
           className="min-h-[140px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
         />
-      ) : (
+      ) : materialType === "youtube" ? (
         <input
           value={materialUrl}
           onChange={(e) => setMaterialUrl(e.target.value)}
           placeholder={t("materials.youtubePlaceholder")}
           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
         />
+      ) : (
+        <div className="space-y-3">
+          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/15 bg-white/5 px-4 py-8 text-center transition hover:border-primary hover:bg-white/10">
+            <Upload className="h-7 w-7 text-primary" />
+            <span className="text-sm font-medium">
+              {materialFile ? "Trocar arquivo" : "Selecionar arquivo do dispositivo"}
+            </span>
+            <span className="text-xs text-hero-muted">
+              PDF, DOC, DOCX, PPT, PPTX, TXT, imagens (máx. 5 MB)
+            </span>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.rtf,image/*,application/pdf"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setFileUploadError("");
+                if (file.size > 5 * 1024 * 1024) {
+                  setFileUploadError("Arquivo maior que 5 MB. Escolha um menor.");
+                  e.target.value = "";
+                  return;
+                }
+                const reader = new FileReader();
+                reader.onload = () => {
+                  setMaterialFile({
+                    name: file.name,
+                    mime: file.type || "application/octet-stream",
+                    size: file.size,
+                    dataUrl: String(reader.result),
+                  });
+                };
+                reader.onerror = () => {
+                  setFileUploadError("Falha ao ler o arquivo. Tente novamente.");
+                };
+                reader.readAsDataURL(file);
+              }}
+            />
+          </label>
+
+          {materialFile && (
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
+              <Paperclip className="h-4 w-4 text-primary" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{materialFile.name}</p>
+                <p className="text-xs text-hero-muted">
+                  {(materialFile.size / 1024).toFixed(1)} KB · {materialFile.mime || "arquivo"}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setMaterialFile(null)}
+                className="text-red-400 hover:bg-white/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {fileUploadError && (
+            <p className="text-xs text-red-400">{fileUploadError}</p>
+          )}
+        </div>
       )}
 
       <div className="flex gap-3">
