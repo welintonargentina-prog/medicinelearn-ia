@@ -510,6 +510,13 @@ const formatDateTime = (date: string) =>
   const [materialTitle, setMaterialTitle] = useState("");
   const [materialContent, setMaterialContent] = useState("");
   const [materialUrl, setMaterialUrl] = useState("");
+  const [materialFile, setMaterialFile] = useState<{
+    name: string;
+    mime: string;
+    size: number;
+    dataUrl: string;
+  } | null>(null);
+  const [fileUploadError, setFileUploadError] = useState<string>("");
 
   const [chatInput, setChatInput] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
