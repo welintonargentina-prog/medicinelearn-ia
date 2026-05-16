@@ -22,6 +22,9 @@ import {
   Send,
   Layers3,
   BookOpenText,
+  Upload,
+  Paperclip,
+  Download,
 
   ChevronRight,
   ChevronLeft,
