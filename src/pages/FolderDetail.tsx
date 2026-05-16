@@ -661,7 +661,7 @@ const FolderDetail = () => {
       }).join("\n\n") || "";
 
       const model = ai.getGenerativeModel({ 
-        model: "gemini-1.5-flash", 
+        model: "gemini-pro", 
         systemInstruction: "Você é o MedLearn AI, um tutor especialista em medicina. Seu objetivo é ajudar o estudante baseado estritamente nos materiais de estudo fornecidos no contexto da pasta. Seja preciso, use termos semiológicos e acadêmicos corretos. Sempre cite qual material fornecido você usou como base para responder."
       });
 
