@@ -1091,8 +1091,10 @@ const formatDateTime = (date: string) =>
               <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
                 {material.type === "note" ? (
                   <NotebookPen className="h-5 w-5 text-primary" />
-                ) : (
+                ) : material.type === "youtube" ? (
                   <Youtube className="h-5 w-5 text-red-400" />
+                ) : (
+                  <FileText className="h-5 w-5 text-primary" />
                 )}
               </div>
 
@@ -1100,7 +1102,13 @@ const formatDateTime = (date: string) =>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-semibold">{material.title}</h3>
                   <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-hero-muted">
-                    {material.type === "note" ? t("materials.note") : "YouTube"}
+                    {material.type === "note"
+                      ? t("materials.note")
+                      : material.type === "youtube"
+                      ? "YouTube"
+                      : material.fileMime === "application/pdf"
+                      ? "PDF"
+                      : "Arquivo"}
                   </span>
                 </div>
 
@@ -1123,6 +1131,33 @@ const formatDateTime = (date: string) =>
                   >
                     {t("materials.openVideo")}
                   </a>
+                )}
+
+                {material.type === "file" && material.fileDataUrl && (
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <a
+                      href={material.fileDataUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-primary underline"
+                    >
+                      <Paperclip className="h-3.5 w-3.5" />
+                      {material.fileName ?? "Abrir arquivo"}
+                    </a>
+                    <a
+                      href={material.fileDataUrl}
+                      download={material.fileName ?? "arquivo"}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs text-hero-muted hover:bg-white/20"
+                    >
+                      <Download className="h-3 w-3" />
+                      Baixar
+                    </a>
+                    {typeof material.fileSize === "number" && (
+                      <span className="text-xs text-hero-muted">
+                        {(material.fileSize / 1024).toFixed(1)} KB
+                      </span>
+                    )}
+                  </div>
                 )}
 
                 <div className="mt-4 flex flex-wrap gap-2">
