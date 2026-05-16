@@ -37,8 +37,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Configuração Global da IA Gratuita do Gemini
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const ai = apiKey ? new GoogleGenerativeAI(apiKey, { apiVersion: "v1beta" }) : null;
-
+const ai = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 type FolderItem = {
   id: string;
   name: string;
@@ -661,7 +660,7 @@ const FolderDetail = () => {
       }).join("\n\n") || "";
 
       const model = ai.getGenerativeModel({ 
-        model: "gemini-pro", 
+        model: "gemini-1.5-flash-latest", 
         systemInstruction: "Você é o MedLearn AI, um tutor especialista em medicina. Seu objetivo é ajudar o estudante baseado estritamente nos materiais de estudo fornecidos no contexto da pasta. Seja preciso, use termos semiológicos e acadêmicos corretos. Sempre cite qual material fornecido você usou como base para responder."
       });
 
