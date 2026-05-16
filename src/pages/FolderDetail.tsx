@@ -22,6 +22,9 @@ import {
   Send,
   Layers3,
   BookOpenText,
+  Upload,
+  Paperclip,
+  Download,
 
   ChevronRight,
   ChevronLeft,
@@ -45,7 +48,7 @@ type FolderItem = {
   createdAt: string;
 };
 
-type MaterialType = "note" | "youtube";
+type MaterialType = "note" | "youtube" | "file";
 
 type MaterialItem = {
   id: string;
@@ -53,6 +56,10 @@ type MaterialItem = {
   type: MaterialType;
   content?: string;
   url?: string;
+  fileName?: string;
+  fileMime?: string;
+  fileSize?: number;
+  fileDataUrl?: string;
   createdAt: string;
   sourceType?: "pdf" | "video" | "note" | "chat" | "file";
   sourceTitle?: string;
@@ -503,6 +510,13 @@ const formatDateTime = (date: string) =>
   const [materialTitle, setMaterialTitle] = useState("");
   const [materialContent, setMaterialContent] = useState("");
   const [materialUrl, setMaterialUrl] = useState("");
+  const [materialFile, setMaterialFile] = useState<{
+    name: string;
+    mime: string;
+    size: number;
+    dataUrl: string;
+  } | null>(null);
+  const [fileUploadError, setFileUploadError] = useState<string>("");
 
   const [chatInput, setChatInput] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
@@ -710,22 +724,41 @@ const formatDateTime = (date: string) =>
     setMaterialContent("");
     setMaterialUrl("");
     setMaterialType("note");
+    setMaterialFile(null);
+    setFileUploadError("");
   };
 
   const buildMaterial = (): MaterialItem | null => {
-    if (!materialTitle.trim()) return null;
+    if (!materialTitle.trim() && materialType !== "file") return null;
     if (materialType === "note" && !materialContent.trim()) return null;
     if (materialType === "youtube" && !materialUrl.trim()) return null;
+    if (materialType === "file" && !materialFile) return null;
+
+    const isPdf = materialType === "file" && materialFile?.mime === "application/pdf";
+    const finalTitle =
+      materialTitle.trim() ||
+      (materialType === "file" ? materialFile?.name ?? "Arquivo" : "");
 
     return {
       id: crypto.randomUUID(),
-      title: materialTitle.trim(),
+      title: finalTitle,
       type: materialType,
       content: materialType === "note" ? materialContent.trim() : undefined,
       url: materialType === "youtube" ? materialUrl.trim() : undefined,
+      fileName: materialType === "file" ? materialFile?.name : undefined,
+      fileMime: materialType === "file" ? materialFile?.mime : undefined,
+      fileSize: materialType === "file" ? materialFile?.size : undefined,
+      fileDataUrl: materialType === "file" ? materialFile?.dataUrl : undefined,
       createdAt: new Date().toISOString(),
-      sourceType: materialType === "youtube" ? "video" : "note",
-      sourceTitle: materialTitle.trim(),
+      sourceType:
+        materialType === "youtube"
+          ? "video"
+          : materialType === "file"
+          ? isPdf
+            ? "pdf"
+            : "file"
+          : "note",
+      sourceTitle: finalTitle,
       sourceId: crypto.randomUUID(),
       pageReference: "",
       videoTimestamp: "",
@@ -904,12 +937,25 @@ const formatDateTime = (date: string) =>
           <Youtube className="mr-2 h-4 w-4" />
         {t("materials.youtubeLink")}
         </Button>
+
+        <Button
+          type="button"
+          variant={materialType === "file" ? "default" : "outline"}
+          onClick={() => setMaterialType("file")}
+        >
+          <Upload className="mr-2 h-4 w-4" />
+          PDF / Arquivo
+        </Button>
       </div>
 
       <input
         value={materialTitle}
         onChange={(e) => setMaterialTitle(e.target.value)}
-        placeholder={t("materials.title")}
+        placeholder={
+          materialType === "file"
+            ? "Título (opcional — usa o nome do arquivo)"
+            : t("materials.title")
+        }
         className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
       />
 
@@ -920,13 +966,78 @@ const formatDateTime = (date: string) =>
           placeholder={t("materials.notePlaceholder")}
           className="min-h-[140px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
         />
-      ) : (
+      ) : materialType === "youtube" ? (
         <input
           value={materialUrl}
           onChange={(e) => setMaterialUrl(e.target.value)}
           placeholder={t("materials.youtubePlaceholder")}
           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-primary"
         />
+      ) : (
+        <div className="space-y-3">
+          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/15 bg-white/5 px-4 py-8 text-center transition hover:border-primary hover:bg-white/10">
+            <Upload className="h-7 w-7 text-primary" />
+            <span className="text-sm font-medium">
+              {materialFile ? "Trocar arquivo" : "Selecionar arquivo do dispositivo"}
+            </span>
+            <span className="text-xs text-hero-muted">
+              PDF, DOC, DOCX, PPT, PPTX, TXT, imagens (máx. 5 MB)
+            </span>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.rtf,image/*,application/pdf"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setFileUploadError("");
+                if (file.size > 5 * 1024 * 1024) {
+                  setFileUploadError("Arquivo maior que 5 MB. Escolha um menor.");
+                  e.target.value = "";
+                  return;
+                }
+                const reader = new FileReader();
+                reader.onload = () => {
+                  setMaterialFile({
+                    name: file.name,
+                    mime: file.type || "application/octet-stream",
+                    size: file.size,
+                    dataUrl: String(reader.result),
+                  });
+                };
+                reader.onerror = () => {
+                  setFileUploadError("Falha ao ler o arquivo. Tente novamente.");
+                };
+                reader.readAsDataURL(file);
+              }}
+            />
+          </label>
+
+          {materialFile && (
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
+              <Paperclip className="h-4 w-4 text-primary" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{materialFile.name}</p>
+                <p className="text-xs text-hero-muted">
+                  {(materialFile.size / 1024).toFixed(1)} KB · {materialFile.mime || "arquivo"}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setMaterialFile(null)}
+                className="text-red-400 hover:bg-white/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {fileUploadError && (
+            <p className="text-xs text-red-400">{fileUploadError}</p>
+          )}
+        </div>
       )}
 
       <div className="flex gap-3">
@@ -980,8 +1091,10 @@ const formatDateTime = (date: string) =>
               <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
                 {material.type === "note" ? (
                   <NotebookPen className="h-5 w-5 text-primary" />
-                ) : (
+                ) : material.type === "youtube" ? (
                   <Youtube className="h-5 w-5 text-red-400" />
+                ) : (
+                  <FileText className="h-5 w-5 text-primary" />
                 )}
               </div>
 
@@ -989,7 +1102,13 @@ const formatDateTime = (date: string) =>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-semibold">{material.title}</h3>
                   <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-hero-muted">
-                    {material.type === "note" ? t("materials.note") : "YouTube"}
+                    {material.type === "note"
+                      ? t("materials.note")
+                      : material.type === "youtube"
+                      ? "YouTube"
+                      : material.fileMime === "application/pdf"
+                      ? "PDF"
+                      : "Arquivo"}
                   </span>
                 </div>
 
@@ -1012,6 +1131,33 @@ const formatDateTime = (date: string) =>
                   >
                     {t("materials.openVideo")}
                   </a>
+                )}
+
+                {material.type === "file" && material.fileDataUrl && (
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <a
+                      href={material.fileDataUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-primary underline"
+                    >
+                      <Paperclip className="h-3.5 w-3.5" />
+                      {material.fileName ?? "Abrir arquivo"}
+                    </a>
+                    <a
+                      href={material.fileDataUrl}
+                      download={material.fileName ?? "arquivo"}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs text-hero-muted hover:bg-white/20"
+                    >
+                      <Download className="h-3 w-3" />
+                      Baixar
+                    </a>
+                    {typeof material.fileSize === "number" && (
+                      <span className="text-xs text-hero-muted">
+                        {(material.fileSize / 1024).toFixed(1)} KB
+                      </span>
+                    )}
+                  </div>
                 )}
 
                 <div className="mt-4 flex flex-wrap gap-2">
