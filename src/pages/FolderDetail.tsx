@@ -77,7 +77,7 @@ type QuizQuestion = {
   explanation: string;
   userAnswer?: string;
   isCorrect?: boolean;
-  aiFeedback?: string; // Armazena a avaliação da IA para as questões abertas
+  aiFeedback?: string;
 };
 
 type QuizHistoryItem = {
@@ -121,7 +121,6 @@ const FolderDetail = () => {
   const { folderId, subFolderId } = useParams<{ folderId: string; subFolderId?: string }>();
   const navigate = useNavigate();
 
-  // Estados de persistência locais
   const [storedFolders, setStoredFolders] = useState<FolderItem[]>([]);
   const SUBFOLDERS_STORAGE_KEY = `folder_${folderId}_subfolders`;
   const FOLDER_MATERIALS_STORAGE_KEY = `folder_${folderId}_materials`;
@@ -133,7 +132,6 @@ const FolderDetail = () => {
   const [newSubFolderColor, setNewSubFolderColor] = useState(folderColors[0]);
   const [showCreateSubFolder, setShowCreateSubFolder] = useState(false);
 
-  // Upload local para base64
   const [materialType, setMaterialType] = useState<MaterialType>("file");
   const [materialTitle, setMaterialTitle] = useState("");
   const [materialContent, setMaterialContent] = useState("");
@@ -141,11 +139,9 @@ const FolderDetail = () => {
   const [selectedFile, setSelectedFile] = useState<{ name: string; mime: string; size: number; dataUrl: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Estados do YouLearn Workspace
   const [activeWorkspaceMaterial, setActiveWorkspaceMaterial] = useState<MaterialItem | null>(null);
   const [workspaceToolTab, setWorkspaceToolTab] = useState<string>("chat");
 
-  // Estados de IA unificados por Contexto Isolado
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isAiCorrecting, setIsAiCorrecting] = useState(false);
   const [chatInputs, setChatInputs] = useState<{ [id: string]: string }>({});
@@ -199,7 +195,6 @@ const FolderDetail = () => {
     return subFolderId ? `subfolder:${subFolderId}` : `folder:${folderId}`;
   }, [activeWorkspaceMaterial, subFolderId, folderId]);
 
-  // Sincronização do Contexto Isolado no LocalStorage
   useEffect(() => {
     const contextKey = `ctx_data_${currentActiveContextId}`;
     const saved = localStorage.getItem(contextKey);
@@ -290,11 +285,10 @@ const FolderDetail = () => {
     if (activeWorkspaceMaterial?.id === id) setActiveWorkspaceMaterial(null);
   };
 
-  // CORE HTTP V1BETA CONNECTION
   const executeGeminiCall = async (prompt: string) => {
     const key = import.meta.env.VITE_GEMINI_API_KEY;
     if (!key) throw new Error("VITE_GEMINI_API_KEY ausente.");
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/models/gemini-1.5-flash:generateContent?key=${key}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
 
     const res = await fetch(url, {
       method: "POST",
@@ -341,7 +335,6 @@ const FolderDetail = () => {
     } finally { setIsAiLoading(false); }
   };
 
-  // GERADOR DE QUESTÕES HÍBRIDAS (MÚLTIPLA ESCOLA + DISSERTATIVAS ABERTAS REAIS)
   const handleGenerateWorkspaceQuiz = async () => {
     setIsAiLoading(true);
     setShowQuizConfig(false);
@@ -410,7 +403,6 @@ Responda unicamente a estrutura válida do Array JSON:
     setActiveQuiz({ ...activeQuiz, questions });
   };
 
-  // CORRETOR INTELIGENTE POR IA PARA AS QUESTÕES DISSERTATIVAS ABERTAS DO ALUNO
   const handleFinalizeAndCorrectQuiz = async () => {
     if (!activeQuiz) return;
     setIsAiCorrecting(true);
@@ -418,7 +410,6 @@ Responda unicamente a estrutura válida do Array JSON:
     const openQuestions = activeQuiz.questions.filter(q => q.type === "open");
     let questionsWithAiFeedback = [...activeQuiz.questions];
 
-    // Se houverem questões abertas preenchidas, chamamos o Gemini para dar nota e julgar a escrita médica
     if (openQuestions.length > 0) {
       for (let i = 0; i < questionsWithAiFeedback.length; i++) {
         const q = questionsWithAiFeedback[i];
@@ -584,7 +575,7 @@ Responda exclusivamente em formato JSON com esta estrutura (sem blocos markdown)
         </div>
       </div>
 
-      {/* PAINEL ESPACIAL CENTRAL (ESTILO YOULEARN INTEGRADO) */}
+      {/* PAINEL ESPACIAL CENTRAL */}
       <div className="flex-1 flex flex-col min-w-0 bg-[#060913]">
         <header className="h-16 border-b border-white/5 flex items-center px-6 justify-between bg-[#0a0e1a]">
           <div className="flex items-center gap-3">
@@ -676,29 +667,30 @@ Responda exclusivamente em formato JSON com esta estrutura (sem blocos markdown)
                         <span className="text-[10px] text-slate-300 block">{selectedFile ? selectedFile.name : "Clique para carregar arquivo do aparelho"}</span>
                       </div>
                     )}
-                    {materialType === "note" && <textarea rows={3} placeholder="Texto do resumo..." value={materialContent} onChange={(e) => setMaterialContent(e.target.value)} className="w-full bg-[#060913] border border-white/10 rounded-xl p-2 text-xs text-white outline-none resize-none" />}
+                    {materialType === "note" && (
+                      <textarea rows={3} placeholder="Texto do resumo..." value={materialContent} onChange={(e) => setMaterialContent(e.target.value)} className="w-full bg-[#060913] border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
+                    )}
 
-                    <div className="flex justify-end gap-2 pt-1">
-                      <Button size="sm" variant="ghost" className="text-xs h-7" onClick={() => setShowAddMaterial(false)}>Sair</Button>
-                      <Button size="sm" className="bg-primary text-white text-xs px-4 h-7 rounded-lg" onClick={saveMaterial}>Salvar</Button>
+                    <div className="flex justify-end gap-2">
+                      <Button size="sm" variant="ghost" className="text-xs h-8 text-slate-400" onClick={() => setShowAddMaterial(false)}>Cancelar</Button>
+                      <Button size="sm" className="text-xs h-8 bg-primary text-white px-4" onClick={saveMaterial}>Salvar no Contexto</Button>
                     </div>
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {currentMaterials.map(m => (
-                    <div key={m.id} onClick={() => setActiveWorkspaceMaterial(m)} className="p-4 bg-[#0a0e1a] border border-white/5 rounded-xl hover:border-primary/40 transition cursor-pointer flex flex-col justify-between group">
+                    <div key={m.id} onClick={() => setActiveWorkspaceMaterial(m)} className="p-4 rounded-xl border border-white/5 bg-[#0a0f1d] hover:border-primary/40 cursor-pointer transition flex flex-col justify-between h-32 group relative shadow-lg">
                       <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-white/5 text-primary uppercase tracking-wider">{m.sourceType}</span>
+                        <div className="flex items-start justify-between">
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-white/5 text-slate-300 uppercase">{m.sourceType}</span>
                           <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition" onClick={(e) => deleteMaterial(m.id, e)}>
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
-                        <h3 className="text-xs font-bold text-white line-clamp-1 group-hover:text-primary transition">{m.title}</h3>
-                        <p className="text-[10px] text-slate-400 mt-1 line-clamp-2">{m.fileName || m.content || m.url}</p>
+                        <h3 className="text-xs font-bold text-slate-200 mt-2 line-clamp-1">{m.title}</h3>
                       </div>
-                      <span className="text-[9px] text-slate-500 block mt-3 pt-2 border-t border-white/5 flex items-center gap-1"><BookOpen className="h-3 w-3" /> Abrir no Workspace IA</span>
+                      <span className="text-[9px] text-slate-500">Adicionado em {new Date(m.createdAt).toLocaleDateString("pt-BR")}</span>
                     </div>
                   ))}
                 </div>
@@ -706,194 +698,165 @@ Responda exclusivamente em formato JSON com esta estrutura (sem blocos markdown)
             )}
           </div>
 
-          {/* PAINEL DIREITO: WORKSPACE COMPACTO DE IA (CHAT, SIMULADOS ABERTOS, CARDS) */}
-          <div className="lg:col-span-5 flex flex-col overflow-hidden bg-[#050711]">
-            <div className="h-11 bg-[#0a0e1a] border-b border-white/5 flex p-1 gap-1">
-              <button onClick={() => setWorkspaceToolTab("chat")} className={cn("flex-1 rounded-lg text-[11px] font-bold transition", workspaceToolTab === "chat" ? "bg-white/10 text-white" : "text-slate-400 hover:text-white")}>💬 Chat Tutor</button>
-              <button onClick={() => setWorkspaceToolTab("quiz")} className={cn("flex-1 rounded-lg text-[11px] font-bold transition", workspaceToolTab === "quiz" ? "bg-white/10 text-white" : "text-slate-400 hover:text-white")}>🎯 Provas & Casos</button>
-              <button onClick={() => setWorkspaceToolTab("flash")} className={cn("flex-1 rounded-lg text-[11px] font-bold transition", workspaceToolTab === "flash" ? "bg-white/10 text-white" : "text-slate-400 hover:text-white")}>🎴 Flashcards</button>
-            </div>
+          {/* PAINEL DIREITO: ABAS DE IA INTEGRADA */}
+          <div className="lg:col-span-5 flex flex-col bg-[#070a14] overflow-hidden">
+            <Tabs value={workspaceToolTab} onValueChange={setWorkspaceToolTab} className="flex-1 flex flex-col overflow-hidden">
+              <TabsList className="grid grid-cols-3 bg-[#0a0e1a] rounded-none border-b border-white/5 h-12 p-0">
+                <TabsTrigger value="chat" className="text-xs rounded-none h-full border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-white/5 text-slate-400 data-[state=active]:text-white">💬 Chat Tutor</TabsTrigger>
+                <TabsTrigger value="quiz" className="text-xs rounded-none h-full border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-white/5 text-slate-400 data-[state=active]:text-white">🎯 Simulados</TabsTrigger>
+                <TabsTrigger value="cards" className="text-xs rounded-none h-full border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-white/5 text-slate-400 data-[state=active]:text-white">🃏 Flashcards</TabsTrigger>
+              </TabsList>
 
-            <div className="flex-1 overflow-y-auto p-4 flex flex-col justify-between">
-              
-              {/* CHAT CONTEXTUAL */}
-              {workspaceToolTab === "chat" && (
-                <div className="flex flex-col h-full justify-between">
-                  <div className="flex-1 overflow-y-auto space-y-3 max-h-[400px]">
-                    {(chatHistories[currentActiveContextId] || []).length === 0 ? (
-                      <div className="text-center p-8 text-slate-500 flex flex-col items-center justify-center h-full space-y-2">
-                        <Sparkles className="h-5 w-5 text-primary/40 animate-pulse" />
-                        <p className="text-xs font-bold text-slate-300">{activeWorkspaceMaterial ? "Explorar este Arquivo" : "Análise Geral da Pasta"}</p>
-                        <p className="text-[10px] text-slate-500">Mande uma dúvida para o Gemini ler seus materiais e responder com fontes de evidência.</p>
-                      </div>
-                    ) : (
-                      (chatHistories[currentActiveContextId] || []).map(msg => (
-                        <div key={msg.id} className={cn("p-3 rounded-xl text-xs max-w-[85%] leading-relaxed whitespace-pre-wrap", msg.role === "user" ? "bg-primary text-white ml-auto" : "bg-white/5 border border-white/5 text-slate-200 mr-auto")}>
-                          {msg.content}
-                        </div>
-                      ))
-                    )}
-                    {isAiLoading && <div className="text-[9px] text-slate-500 animate-pulse">MedLearn AI está formulando...</div>}
-                  </div>
-
-                  <div className="pt-3 border-t border-white/5 flex gap-2">
-                    <input type="text" placeholder="Perguntar à Inteligência Artificial..." value={chatInputs[currentActiveContextId] || ""} onChange={(e) => setChatInputs({ ...chatInputs, [currentActiveContextId]: e.target.value })} onKeyDown={(e) => e.key === "Enter" && handleSendWorkspaceChat()} className="flex-1 bg-[#060913] border border-white/10 rounded-xl px-3 text-xs text-white outline-none focus:border-primary/50" />
-                    <Button size="icon" className="bg-primary text-white rounded-xl h-9 w-9" onClick={handleSendWorkspaceChat}><Send className="h-3.5 w-3.5" /></Button>
-                  </div>
+              {/* ABA CHAT */}
+              <TabsContent value="chat" className="flex-1 flex flex-col overflow-hidden m-0 p-4 space-y-4">
+                <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                  {(chatHistories[currentActiveContextId] || []).map(msg => (
+                    <div key={msg.id} className={cn("p-3 rounded-xl max-w-[85%] text-xs leading-relaxed font-sans shadow", msg.role === "user" ? "bg-primary text-white ml-auto" : "bg-[#0d1224] text-slate-200 border border-white/5")}>
+                      {msg.content}
+                    </div>
+                  ))}
+                  {isAiLoading && (
+                    <div className="bg-[#0d1224] text-slate-400 p-3 rounded-xl text-xs border border-white/5 w-fit flex items-center gap-2">
+                      <RefreshCw className="h-3 w-3 animate-spin text-primary" /> MedLearn AI analisando conduta...
+                    </div>
+                  )}
                 </div>
-              )}
+                <div className="flex gap-2 bg-[#0a0e1a] border border-white/5 p-2 rounded-xl">
+                  <input type="text" placeholder="Pergunte ao preceptor sobre a matéria..." value={chatInputs[currentActiveContextId] || ""} onChange={(e) => setChatInputs({ ...chatInputs, [currentActiveContextId]: e.target.value })} onKeyDown={(e) => e.key === "Enter" && handleSendWorkspaceChat()} className="flex-1 bg-transparent text-xs text-white outline-none px-2" />
+                  <Button size="icon" className="h-8 w-8 bg-primary text-white rounded-lg" onClick={handleSendWorkspaceChat}>
+                    <Send className="h-3 w-3" />
+                  </Button>
+                </div>
+              </TabsContent>
 
-              {/* SIMULADOS HÍBRIDOS (MÚLTIPLA ESCOLA + DISSERTATIVAS CORRIGIDAS POR IA) */}
-              {workspaceToolTab === "quiz" && (
-                <div className="space-y-4 h-full flex flex-col justify-between">
-                  {!activeQuiz && !isAiLoading && (
-                    <div className="text-center p-6 space-y-3 my-auto">
-                      <Target className="h-7 w-7 text-primary/40 mx-auto" />
-                      <p className="text-xs font-bold text-slate-300">Nenhum simulado clínico rodando</p>
-                      <Button size="sm" className="bg-primary text-white rounded-xl text-xs px-4" onClick={() => setShowQuizConfig(true)}>Configurar Avaliação por IA</Button>
+              {/* ABA SIMULADOS */}
+              <TabsContent value="quiz" className="flex-1 flex flex-col overflow-y-auto m-0 p-4">
+                {!activeQuiz ? (
+                  <div className="text-center py-12 space-y-4">
+                    <Target className="h-10 w-10 text-slate-600 mx-auto" />
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-200">Banca Examinadora de IA</h3>
+                      <p className="text-[10px] text-slate-400 max-w-[240px] mx-auto mt-1">Gere testes mistos (questões objetivas + casos clínicos dissertativos) baseados no seu material.</p>
                     </div>
-                  )}
+                    <Button className="bg-primary text-white text-xs rounded-xl px-6 shadow-md" onClick={() => setShowQuizConfig(true)}> Gerar Nova Avaliação</Button>
 
-                  {showQuizConfig && (
-                    <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-3 text-xs">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-[10px] text-slate-400 block mb-1">Rigor Técnico</label>
-                          <select value={quizConfig.difficulty} onChange={(e) => setQuizConfig({ ...quizConfig, difficulty: e.target.value as Difficulty })} className="w-full bg-[#060913] border border-white/10 p-1.5 rounded text-[11px] text-white outline-none">
-                            <option value="medium">Internato Clínico</option>
-                            <option value="hard">Residência Médica</option>
-                            <option value="expert">Prova de Título</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-[10px] text-slate-400 block mb-1">Total de Questões</label>
-                          <input type="number" min={1} max={10} value={quizConfig.questionCount} onChange={(e) => setQuizConfig({ ...quizConfig, questionCount: parseInt(e.target.value) || 3 })} className="w-full bg-[#060913] border border-white/10 p-1 rounded text-[11px] text-white outline-none" />
-                        </div>
+                    {showQuizConfig && (
+                      <div className="p-4 bg-[#0a0e1a] border border-white/5 rounded-xl text-left space-y-3 max-w-sm mx-auto shadow-2xl mt-4">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total de Questões</label>
+                        <input type="number" min={2} max={10} value={quizConfig.questionCount} onChange={(e) => setQuizConfig({ ...quizConfig, questionCount: parseInt(e.target.value) || 4 })} className="w-full bg-[#060913] border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
+                        <Button className="w-full bg-primary text-white text-xs h-9 rounded-lg font-bold" onClick={handleGenerateWorkspaceQuiz}>Confirmar e Iniciar</Button>
                       </div>
-                      <Button size="sm" className="w-full bg-emerald-600 text-white rounded-lg text-xs font-bold h-8" onClick={handleGenerateWorkspaceQuiz}>Gerar Caso Clínico + Múltipla Escolha</Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                      <h3 className="text-xs font-bold text-white">{activeQuiz.title}</h3>
+                      <Button size="sm" variant="ghost" className="text-[10px] text-red-400 h-6" onClick={() => setActiveQuiz(null)}>Abandonar</Button>
                     </div>
-                  )}
 
-                  {isAiLoading && <div className="text-center text-xs p-8 text-slate-400 animate-pulse my-auto">O Gemini está gerando e balanceando as questões...</div>}
-
-                  {activeQuiz && (
-                    <div className="space-y-4 max-h-[420px] overflow-y-auto pr-1 flex-1">
+                    <div className="space-y-6">
                       {activeQuiz.questions.map((q, idx) => (
-                        <div key={q.id} className="p-3 bg-[#0a0e1a] border border-white/5 rounded-xl space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[9px] font-black uppercase text-primary tracking-wider">{q.type === "multiple" ? "Múltipla Escolha" : "Caso Clínico Aberto"}</span>
-                            <span className="text-[10px] text-slate-500">Item {idx + 1}</span>
-                          </div>
-                          <h4 className="text-xs font-bold text-slate-200 leading-relaxed">{q.questionText}</h4>
-                          
-                          {q.type === "multiple" ? (
-                            /* Renderização do Bloco de Múltipla Escolha */
-                            <div className="space-y-1.5 pt-1">
-                              {q.options?.map(opt => {
-                                const isSelected = q.userAnswer === opt;
-                                let btnClass = "bg-white/5 border-white/5 text-slate-300";
-                                if (isSelected) btnClass = "bg-primary/20 border-primary text-primary";
-                                if (activeQuiz.completed && q.correctAnswer === opt) btnClass = "bg-emerald-500/20 border-emerald-500 text-emerald-400 font-black";
+                        <div key={q.id} className="p-4 bg-[#0d1224] border border-white/5 rounded-xl space-y-3 relative shadow-md">
+                          <span className="text-[9px] font-black uppercase text-primary tracking-widest block">Questão {idx + 1} ({q.type === "multiple" ? "Múltipla Escolha" : "Dissertativa"})</span>
+                          <p className="text-xs text-slate-200 font-medium leading-relaxed">{q.questionText}</p>
 
+                          {q.type === "multiple" && q.options && (
+                            <div className="space-y-1.5 pt-1">
+                              {q.options.map(opt => {
+                                const isSelected = q.userAnswer === opt;
                                 return (
-                                  <button key={opt} disabled={activeQuiz.completed} onClick={() => handleAnswerMultipleQuestion(q.id, opt)} className={cn("w-full text-left p-2 border rounded-lg text-[10px] transition", btnClass)}>{opt}</button>
+                                  <button key={opt} disabled={activeQuiz.completed} onClick={() => handleAnswerMultipleQuestion(q.id, opt)} className={cn("w-full text-left p-2.5 rounded-lg text-xs border transition flex items-center justify-between", isSelected ? "bg-primary/20 border-primary text-white" : "bg-[#060913] border-white/5 text-slate-400 hover:bg-white/5")}>
+                                    <span>{opt}</span>
+                                    {activeQuiz.completed && q.correctAnswer === opt && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />}
+                                  </button>
                                 );
                               })}
                             </div>
-                          ) : (
-                            /* RENDERIZAÇÃO REAL DO CAIXOTE DE TEXTO PARA DIGITAÇÃO DO CASO ABERTO */
-                            <div className="pt-1 space-y-2">
-                              <textarea rows={3} disabled={activeQuiz.completed} placeholder="Redija aqui sua conduta médica analítica baseada no caso clínico..." value={q.userAnswer || ""} onChange={(e) => handleUpdateOpenAnswerText(q.id, e.target.value)} className="w-full bg-[#060913] border border-white/10 rounded-xl p-2.5 text-[11px] text-white outline-none focus:border-primary/40 resize-none font-sans" />
-                              
+                          )}
+
+                          {q.type === "open" && (
+                            <div className="space-y-2 pt-1">
+                              <textarea rows={3} disabled={activeQuiz.completed} placeholder="Digite sua conduta médica detalhada..." value={q.userAnswer || ""} onChange={(e) => handleUpdateOpenAnswerText(q.id, e.target.value)} className="w-full bg-[#060913] border border-white/10 rounded-lg p-2 text-xs text-slate-200 outline-none focus:border-primary/50" />
                               {activeQuiz.completed && q.aiFeedback && (
-                                <div className={cn("p-2 rounded-lg text-[10px] leading-relaxed border", q.isCorrect ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400")}>
-                                  <span className="font-bold block uppercase tracking-wider text-[9px] mb-0.5">Avaliação da Banca IA:</span>
-                                  {q.aiFeedback}
+                                <div className="p-3 bg-primary/5 border border-primary/10 rounded-lg space-y-1.5 mt-2">
+                                  <span className="text-[9px] font-bold text-primary block flex items-center gap-1"><Award className="h-3 w-3" /> Avaliação da Banca AI:</span>
+                                  <p className="text-[11px] text-slate-300 italic">"{q.aiFeedback}"</p>
+                                  <p className="text-[11px] text-slate-400 mt-1"><strong className="text-[10px] text-emerald-400">Gabarito Esperado:</strong> {q.correctAnswer}</p>
                                 </div>
                               )}
                             </div>
                           )}
 
                           {activeQuiz.completed && (
-                            <div className="p-2 bg-white/5 rounded text-[10px] text-slate-400 leading-relaxed border border-white/5">
-                              <span className="font-bold text-amber-400 block">Espelho de Correção Oficial:</span> {q.explanation}
+                            <div className={cn("text-[10px] font-bold flex items-center gap-1 mt-2", q.isCorrect ? "text-emerald-400" : "text-red-400")}>
+                              {q.isCorrect ? "✓ Resposta Correta" : "✕ Resposta Incorreta"}
                             </div>
                           )}
                         </div>
                       ))}
-
-                      {!activeQuiz.completed && (
-                        <Button disabled={isAiCorrecting} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 rounded-xl flex items-center justify-center gap-1.5" onClick={handleFinalizeAndCorrectQuiz}>
-                          {isAiCorrecting ? (
-                            <>
-                              <RefreshCw className="h-3.5 w-3.5 animate-spin" /> Corrigindo Respostas Abertas...
-                            </>
-                          ) : (
-                            "Encerrar Simulado & Entregar para Correção por IA"
-                          )}
-                        </Button>
-                      )}
-
-                      {activeQuiz.completed && (
-                        <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl flex justify-between items-center text-xs">
-                          <span className="font-bold text-white flex items-center gap-1"><Award className="h-4 w-4 text-amber-400" /> Nota Final do Aluno:</span>
-                          <span className="text-base font-black text-white">{activeQuiz.correctPercentage}% de acerto</span>
-                        </div>
-                      )}
                     </div>
-                  )}
-                </div>
-              )}
 
-              {/* FLASHCARDS INTERATIVOS */}
-              {workspaceToolTab === "flash" && (
-                <div className="space-y-4 h-full flex flex-col justify-between">
-                  {activeCardsList.length === 0 && !isAiLoading && (
-                    <div className="text-center p-8 space-y-2 my-auto">
-                      <Layers3 className="h-7 w-7 text-primary/40 mx-auto" />
-                      <p className="text-xs font-bold text-slate-300">Nenhum flashcard gerado</p>
-                      <Button size="sm" className="bg-primary text-white rounded-xl text-xs" onClick={handleGenerateWorkspaceFlashcards}>Gerar Deck Espaçado</Button>
-                    </div>
-                  )}
-
-                  {isAiLoading && <div className="text-center text-xs text-slate-500 animate-pulse p-6 my-auto">Estruturando cartões flash...</div>}
-
-                  {activeCard && (
-                    <div className="flex flex-col items-center space-y-4 py-2 my-auto w-full">
-                      <div className="w-full h-40 [perspective:1000px]" onClick={() => setIsCardFlipped(!isCardFlipped)}>
-                        <div className={cn("relative w-full h-full duration-500 [transform-style:preserve-3d] cursor-pointer rounded-xl border border-white/5", isCardFlipped && "[transform:rotateY(180deg)]")}>
-                          <div className="absolute inset-0 bg-[#0a0e1c] p-4 flex flex-col justify-between rounded-xl [backface-visibility:hidden]">
-                            <span className="text-[8px] font-bold text-primary uppercase">Pergunta</span>
-                            <p className="text-xs font-bold text-white text-center leading-relaxed">{activeCard.front}</p>
-                            <span className="text-[8px] text-center text-slate-500">Clique para revelar</span>
-                          </div>
-                          <div className="absolute inset-0 bg-[#08172c] p-4 flex flex-col justify-between rounded-xl [transform:rotateY(180deg)] [backface-visibility:hidden] border border-primary/20">
-                            <span className="text-[8px] font-bold text-emerald-400 uppercase">Gabarito</span>
-                            <p className="text-xs font-medium text-slate-200 text-center leading-relaxed">{activeCard.back}</p>
-                            <span className="text-[8px] text-center text-slate-500">Avalie sua memória</span>
-                          </div>
-                        </div>
+                    {!activeQuiz.completed ? (
+                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 rounded-xl mt-4 shadow-lg" disabled={isAiCorrecting} onClick={handleFinalizeAndCorrectQuiz}>
+                        {isAiCorrecting ? "Banca Avaliando Escrita..." : "Finalizar e Entregar para Correção"}
+                      </Button>
+                    ) : (
+                      <div className="p-4 bg-white/5 border border-white/5 rounded-xl text-center space-y-2 mt-4">
+                        <h4 className="text-xs font-bold text-white">Resultado Consolidado</h4>
+                        <p className="text-2xl font-black text-primary">{activeQuiz.correctPercentage}%</p>
+                        <p className="text-[10px] text-slate-400">Você acertou {activeQuiz.correctCount} de {activeQuiz.questions.length} questões.</p>
+                        <Button size="sm" variant="ghost" className="text-xs text-primary mt-1" onClick={() => setActiveQuiz(null)}>Gerar Outro Teste</Button>
                       </div>
+                    )}
+                  </div>
+                )}
+              </TabsContent>
 
-                      <span className="text-[10px] text-slate-400">Card {currentCardIndex + 1} de {activeCardsList.length}</span>
-
-                      {isCardFlipped && (
-                        <div className="flex gap-2 w-full">
-                          <button onClick={() => handleCardEvaluation("wrong")} className="flex-1 bg-red-600/80 hover:bg-red-600 text-white font-bold text-[10px] h-8 rounded-lg">Errei</button>
-                          <button onClick={() => handleCardEvaluation("correct")} className="flex-1 bg-emerald-600/80 hover:bg-emerald-600 text-white font-bold text-[10px] h-8 rounded-lg">Acertei!</button>
-                        </div>
-                      )}
+              {/* ABA FLASHCARDS */}
+              <TabsContent value="cards" className="flex-1 flex flex-col overflow-y-auto m-0 p-4">
+                {activeCardsList.length === 0 ? (
+                  <div className="text-center py-12 space-y-3">
+                    <BookOpen className="h-10 w-10 text-slate-600 mx-auto" />
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-200">Revisão Espaçada (Anki)</h3>
+                      <p className="text-[10px] text-slate-400 max-w-[200px] mx-auto mt-1">Crie cards de memorização ativa gerados por inteligência artificial.</p>
                     </div>
-                  )}
-                </div>
-              )}
+                    <Button className="bg-primary text-white text-xs rounded-xl px-5 shadow" onClick={handleGenerateWorkspaceFlashcards}>Gerar Flashcards</Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6 flex flex-col items-center justify-center py-4">
+                    <div className="w-full max-w-sm h-48 perspective cursor-pointer" onClick={() => setIsCardFlipped(!isCardFlipped)}>
+                      <div className={cn("w-full h-full duration-500 transform-style relative rounded-2xl border border-white/5 shadow-2xl p-6 flex flex-col items-center justify-center text-center select-text transition-transform", isCardFlipped ? "rotate-y-180 bg-[#0e1424]" : "bg-[#0a0f1d]")}>
+                        {!isCardFlipped ? (
+                          <div className="space-y-2">
+                            <span className="text-[9px] font-bold text-primary uppercase tracking-widest block">Frente (Pergunta)</span>
+                            <p className="text-xs font-bold text-white leading-relaxed">{activeCard?.front}</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2 rotate-y-180">
+                            <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest block">Verso (Resposta)</span>
+                            <p className="text-xs text-slate-200 leading-relaxed font-sans">{activeCard?.back}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-            </div>
+                    <div className="text-center text-[10px] text-slate-500">Card {currentCardIndex + 1} de {activeCardsList.length}</div>
+
+                    {isCardFlipped && (
+                      <div className="flex gap-3 w-full max-w-sm justify-center">
+                        <Button className="bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-bold flex-1 h-9 rounded-xl border border-red-500/30" onClick={() => handleCardEvaluation("wrong")}>Errei</Button>
+                        <Button className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs font-bold flex-1 h-9 rounded-xl border border-emerald-500/30" onClick={() => handleCardEvaluation("correct")}>Acertei</Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 };
