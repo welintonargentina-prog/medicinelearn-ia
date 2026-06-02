@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -570,7 +571,7 @@ Responda exclusivamente em formato JSON com esta estrutura (sem blocos markdown)
             )}
 
             <div className="space-y-1">
-              <button onClick={() => { setSelectedSubFolderId(null); navigate(`/folders/${folderId}`); setActiveWorkspaceMaterial(null); }} className={cn("w-full text-left px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2.5 transition", !subFolderId ? "bg-primary text-white font-medium" : "hover:bg-white/5 text-slate-400")}>
+              <button onClick={() => { navigate(`/folders/${folderId}`); setActiveWorkspaceMaterial(null); }} className={cn("w-full text-left px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2.5 transition", !subFolderId ? "bg-primary text-white font-medium" : "hover:bg-white/5 text-slate-400")}>
                 <Folder className="h-4 w-4" /> Contexto Geral da Pasta
               </button>
               {subFolders.map(s => (

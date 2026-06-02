@@ -15,6 +15,7 @@ import Folders from "./pages/Folders";
 import FolderDetail from "./pages/FolderDetail";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
+import Tutor from "./pages/Tutor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -75,6 +76,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Summaries />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tutor"
+                element={
+                  <ProtectedRoute>
+                    <Tutor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tutor/:threadId"
+                element={
+                  <ProtectedRoute>
+                    <Tutor />
                   </ProtectedRoute>
                 }
               />
